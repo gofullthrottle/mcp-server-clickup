@@ -33,7 +33,7 @@ const SpaceFeaturesSchema = z.object({
   portfolios: z.object({
     enabled: z.boolean()
   }).optional()
-}).partial();
+});
 
 export const spaceTools: Tool[] = [
   {
@@ -319,7 +319,7 @@ export async function handleSpaceTool(
       const space = await spaceService.createSpace({
         name: validated.name,
         multiple_assignees: validated.multiple_assignees,
-        features: validated.features
+        features: validated.features as any
       });
       return {
         id: space.id,
@@ -341,7 +341,7 @@ export async function handleSpaceTool(
       }).parse(args);
 
       const { space_id, ...updateData } = validated;
-      const space = await spaceService.updateSpace(space_id, updateData);
+      const space = await spaceService.updateSpace(space_id, updateData as any);
       return {
         id: space.id,
         name: space.name,
