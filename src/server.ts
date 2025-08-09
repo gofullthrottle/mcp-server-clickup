@@ -56,7 +56,11 @@ import {
   handleStopTimeTracking,
   handleAddTimeEntry,
   handleDeleteTimeEntry,
-  handleGetCurrentTimeEntry
+  handleGetCurrentTimeEntry,
+  dependencyTools,
+  handleDependencyTool,
+  advancedTaskTools,
+  handleAdvancedTaskTool
 } from "./tools/task/index.js";
 import {
   createListTool, handleCreateList,
@@ -92,6 +96,10 @@ import {
   resolveAssigneesTool, handleResolveAssignees
 } from "./tools/member.js";
 
+import { spaceTools, handleSpaceTool } from "./tools/space.js";
+import { customFieldTools, handleCustomFieldTool } from "./tools/custom-fields.js";
+import { projectTools, handleProjectTool } from "./tools/project.js";
+
 import { Logger } from "./logger.js";
 import { clickUpServices } from "./services/shared.js";
 
@@ -99,7 +107,7 @@ import { clickUpServices } from "./services/shared.js";
 const logger = new Logger('Server');
 
 // Use existing services from shared module instead of creating new ones
-const { workspace } = clickUpServices;
+const { workspace, space: spaceService, project: projectService } = clickUpServices;
 
 /**
  * Determines if a tool should be enabled based on ENABLED_TOOLS and DISABLED_TOOLS configuration.
@@ -204,6 +212,11 @@ export function configureServer() {
         getWorkspaceMembersTool,
         findMemberByNameTool,
         resolveAssigneesTool,
+        ...spaceTools,
+        ...dependencyTools,
+        ...customFieldTools,
+        ...projectTools,
+        ...advancedTaskTools,
         ...documentModule()
       ].filter(tool => isToolEnabled(tool.name))
     };
@@ -217,8 +230,8 @@ export function configureServer() {
 
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
-    toolCount: 36,
-    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document"]
+    toolCount: 65,
+    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "space", "dependencies", "custom-fields", "project", "advanced-task", "document"]
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -330,6 +343,45 @@ export function configureServer() {
           return handleFindMemberByName(params);
         case "resolve_assignees":
           return handleResolveAssignees(params);
+        // Space tools
+        case "clickup_space_list":
+        case "clickup_space_get":
+        case "clickup_space_create":
+        case "clickup_space_update":
+        case "clickup_space_delete":
+        case "clickup_space_archive":
+        case "clickup_space_toggle_feature":
+          return handleSpaceTool(name, params, spaceService);
+        // Dependency tools
+        case "clickup_task_add_dependency":
+        case "clickup_task_remove_dependency":
+        case "clickup_task_get_dependencies":
+        case "clickup_task_add_link":
+        case "clickup_task_remove_link":
+          return handleDependencyTool(name, params);
+        // Custom field tools
+        case "clickup_custom_field_get_definitions":
+        case "clickup_custom_field_set_value":
+        case "clickup_custom_field_remove_value":
+        case "clickup_custom_field_get_values":
+        case "clickup_custom_field_find_by_name":
+        case "clickup_custom_field_set_by_name":
+          return handleCustomFieldTool(name, params);
+        // Project tools
+        case "clickup_project_initialize":
+        case "clickup_project_create_gantt":
+        case "clickup_project_apply_template":
+        case "clickup_project_create_milestones":
+        case "clickup_project_get_templates":
+          return handleProjectTool(name, params);
+        // Advanced task tools
+        case "clickup_task_create_from_plan":
+        case "clickup_task_create_with_scheduling":
+        case "clickup_task_bulk_create_with_dependencies":
+        case "clickup_task_calculate_timeline":
+        case "clickup_task_generate_gantt_data":
+        case "clickup_task_identify_parallel_groups":
+          return handleAdvancedTaskTool(name, params);
         default:
           logger.error(`Unknown tool requested: ${name}`);
           const error = new Error(`Unknown tool: ${name}`);

@@ -60,6 +60,18 @@ export {
   handleAttachTaskFile
 } from './attachments.js';
 
+// Re-export dependency tools
+export {
+  dependencyTools,
+  handleDependencyTool
+} from './dependencies.js';
+
+// Re-export advanced task tools
+export {
+  advancedTaskTools,
+  handleAdvancedTaskTool
+} from './advanced.js';
+
 // Re-export handlers
 export {
   // Single task operation handlers
