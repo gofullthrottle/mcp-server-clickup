@@ -27,6 +27,9 @@ export { FolderService } from './folder.js';
 export { ClickUpTagService } from './tag.js';
 export { TimeTrackingService } from './time.js';
 export { DocumentService } from './document.js';
+export { SpaceService } from './space.js';
+export { CustomFieldDefinitionService } from './custom-fields.js';
+export { ProjectService } from './project.js';
 
 // Import service classes for the factory function
 import { WorkspaceService } from './workspace.js';
@@ -37,6 +40,8 @@ import { ClickUpTagService } from './tag.js';
 import { TimeTrackingService } from './time.js';
 import { Logger } from '../../logger.js';
 import { DocumentService } from './document.js';
+import { SpaceService } from './space.js';
+import { ProjectService } from './project.js';
 
 /**
  * Configuration options for ClickUp services
@@ -58,6 +63,8 @@ export interface ClickUpServices {
   tag: ClickUpTagService;
   timeTracking: TimeTrackingService;
   document: DocumentService;
+  space: SpaceService;
+  project: ProjectService;
 }
 
 // Singleton logger for ClickUp services
@@ -81,6 +88,10 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
   logger.info('Initializing ClickUp Workspace service');
   const workspaceService = new WorkspaceService(apiKey, teamId, baseUrl);
 
+  // Initialize space service  
+  logger.info('Initializing ClickUp Space service');
+  const spaceService = new SpaceService(apiKey, teamId, baseUrl);
+
   // Initialize remaining services with workspace dependency
   logger.info('Initializing ClickUp Task service');
   const taskService = new TaskService(apiKey, teamId, baseUrl, workspaceService);
@@ -100,6 +111,18 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
   logger.info('Initializing ClickUp Document service');
   const documentService = new DocumentService(apiKey, teamId, baseUrl);
 
+  // Initialize project service with dependencies
+  logger.info('Initializing ClickUp Project service');
+  const projectService = new ProjectService(
+    apiKey, 
+    teamId, 
+    baseUrl,
+    spaceService,
+    folderService,
+    listService,
+    taskService
+  );
+
   const services = {
     workspace: workspaceService,
     task: taskService,
@@ -107,7 +130,9 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
     folder: folderService,
     tag: tagService,
     timeTracking: timeTrackingService,
-    document: documentService
+    document: documentService,
+    space: spaceService,
+    project: projectService
   };
 
   // Log successful completion

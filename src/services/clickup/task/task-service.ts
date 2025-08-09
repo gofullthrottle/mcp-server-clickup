@@ -16,6 +16,9 @@ import { TaskServiceAttachments } from './task-attachments.js';
 import { TaskServiceComments } from './task-comments.js';
 import { TaskServiceTags } from './task-tags.js';
 import { TaskServiceCustomFields } from './task-custom-fields.js';
+import { TaskDependencyService } from './dependencies.js';
+import { TaskPlanningService } from './planning.js';
+import { TaskSchedulingService } from './scheduling.js';
 import { WorkspaceService } from '../workspace.js';
 import {
   ClickUpTask,
@@ -42,6 +45,9 @@ export class TaskService extends TaskServiceCore {
   public readonly comments: TaskServiceComments;
   public readonly tags: TaskServiceTags;
   public readonly customFields: TaskServiceCustomFields;
+  public readonly dependencies: TaskDependencyService;
+  public readonly planning: TaskPlanningService;
+  public readonly scheduling: TaskSchedulingService;
 
   constructor(apiKey: string, teamId: string, baseUrl?: string, workspaceService?: WorkspaceService) {
     super(apiKey, teamId, baseUrl, workspaceService);
@@ -53,6 +59,9 @@ export class TaskService extends TaskServiceCore {
     this.comments = new TaskServiceComments(this);
     this.tags = new TaskServiceTags(this);
     this.customFields = new TaskServiceCustomFields(this);
+    this.dependencies = new TaskDependencyService(apiKey, teamId, baseUrl || 'https://api.clickup.com/api/v2');
+    this.planning = new TaskPlanningService(this, this.dependencies);
+    this.scheduling = new TaskSchedulingService(this);
   }
 
   // ===== DELEGATED SEARCH METHODS =====
@@ -158,5 +167,27 @@ export class TaskService extends TaskServiceCore {
 
   async getCustomFieldValue(taskId: string, fieldId: string): Promise<any> {
     return this.customFields.getCustomFieldValue(taskId, fieldId);
+  }
+
+  // ===== DELEGATED DEPENDENCY METHODS =====
+
+  async addDependency(taskId: string, dependsOn?: string, dependencyOf?: string, useCustomTaskIds: boolean = false) {
+    return this.dependencies.addDependency(taskId, dependsOn, dependencyOf, useCustomTaskIds);
+  }
+
+  async removeDependency(taskId: string, dependsOn?: string, dependencyOf?: string, useCustomTaskIds: boolean = false) {
+    return this.dependencies.removeDependency(taskId, dependsOn, dependencyOf, useCustomTaskIds);
+  }
+
+  async addTaskLink(taskId: string, linksTo: string, useCustomTaskIds: boolean = false) {
+    return this.dependencies.addTaskLink(taskId, linksTo, useCustomTaskIds);
+  }
+
+  async removeTaskLink(taskId: string, linksTo: string, useCustomTaskIds: boolean = false) {
+    return this.dependencies.removeTaskLink(taskId, linksTo, useCustomTaskIds);
+  }
+
+  async getTaskDependencies(taskId: string, useCustomTaskIds: boolean = false) {
+    return this.dependencies.getTaskDependencies(taskId, useCustomTaskIds);
   }
 }

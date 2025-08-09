@@ -23,6 +23,9 @@ export { TaskServiceAttachments } from './task-attachments.js';
 export { TaskServiceComments } from './task-comments.js';
 export { TaskServiceTags } from './task-tags.js';
 export { TaskServiceCustomFields } from './task-custom-fields.js';
+export { TaskDependencyService } from './dependencies.js';
+export { TaskPlanningService } from './planning.js';
+export { TaskSchedulingService } from './scheduling.js';
 
 // Export types and interfaces from all modules
 export * from './task-core.js';
@@ -31,6 +34,9 @@ export * from './task-attachments.js';
 export * from './task-comments.js';
 export * from './task-tags.js';
 export * from './task-custom-fields.js';
+export * from './dependencies.js';
+export * from './planning.js';
+export * from './scheduling.js';
 
 // Re-export TaskService as the default export
 export { TaskService as default } from './task-service.js'; 
