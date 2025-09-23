@@ -5,7 +5,12 @@
       "Bash(npm run build:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:docs.cloudflare.com)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "WebSearch",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }
