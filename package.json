@@ -16,8 +16,25 @@
   ],
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build:worker": "esbuild src/worker.ts --bundle --format=esm --platform=browser --outfile=dist/worker.js --external:node:*",
     "start": "node build/index.js",
     "dev": "tsc -w",
+    "dev:worker": "wrangler dev --env development",
+    "deploy:dev": "npm run build:worker && wrangler deploy --env development",
+    "deploy:staging": "npm run build:worker && wrangler deploy --env staging",
+    "deploy:production": "npm run build:worker && wrangler deploy --env production",
+    "kv:create": "npm run kv:create:dev && npm run kv:create:staging && npm run kv:create:prod",
+    "kv:create:dev": "wrangler kv namespace create dev_user_sessions && wrangler kv namespace create dev_api_keys && wrangler kv namespace create dev_user_mappings && wrangler kv namespace create dev_rate_limits && wrangler kv namespace create dev_tool_configs && wrangler kv namespace create dev_stripe_customers",
+    "kv:create:staging": "wrangler kv namespace create staging_user_sessions --env staging && wrangler kv namespace create staging_api_keys --env staging && wrangler kv namespace create staging_user_mappings --env staging && wrangler kv namespace create staging_rate_limits --env staging && wrangler kv namespace create staging_tool_configs --env staging && wrangler kv namespace create staging_stripe_customers --env staging",
+    "kv:create:prod": "wrangler kv namespace create prod_user_sessions --env production && wrangler kv namespace create prod_api_keys --env production && wrangler kv namespace create prod_user_mappings --env production && wrangler kv namespace create prod_rate_limits --env production && wrangler kv namespace create prod_tool_configs --env production && wrangler kv namespace create prod_stripe_customers --env production",
+    "r2:create": "wrangler r2 bucket create clickup-mcp-audit-dev && wrangler r2 bucket create clickup-mcp-audit-staging && wrangler r2 bucket create clickup-mcp-audit-prod",
+    "secrets:set": "npm run secrets:set:dev && npm run secrets:set:staging && npm run secrets:set:prod",
+    "secrets:set:dev": "wrangler secret put CLICKUP_CLIENT_ID --env development && wrangler secret put CLICKUP_CLIENT_SECRET --env development && wrangler secret put ENCRYPTION_KEY --env development && wrangler secret put JWT_SECRET --env development && wrangler secret put STRIPE_SECRET_KEY --env development && wrangler secret put STRIPE_WEBHOOK_SECRET --env development && wrangler secret put STRIPE_PRICE_ID --env development",
+    "secrets:set:staging": "wrangler secret put CLICKUP_CLIENT_ID --env staging && wrangler secret put CLICKUP_CLIENT_SECRET --env staging && wrangler secret put ENCRYPTION_KEY --env staging && wrangler secret put JWT_SECRET --env staging && wrangler secret put STRIPE_SECRET_KEY --env staging && wrangler secret put STRIPE_WEBHOOK_SECRET --env staging && wrangler secret put STRIPE_PRICE_ID --env staging",
+    "secrets:set:prod": "wrangler secret put CLICKUP_CLIENT_ID --env production && wrangler secret put CLICKUP_CLIENT_SECRET --env production && wrangler secret put ENCRYPTION_KEY --env production && wrangler secret put JWT_SECRET --env production && wrangler secret put STRIPE_SECRET_KEY --env production && wrangler secret put STRIPE_WEBHOOK_SECRET --env production && wrangler secret put STRIPE_PRICE_ID --env production",
+    "tail": "wrangler tail",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -55,18 +72,29 @@
   },
   "homepage": "https://github.com/taazkareem/clickup-mcp-server#readme",
   "dependencies": {
+    "@hono/oauth-providers": "^0.8.5",
     "@modelcontextprotocol/sdk": "^1.11.3",
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "hono": "^4.9.5",
+    "jose": "^6.1.0",
+    "stripe": "^18.5.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250831.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^20.11.16",
-    "typescript": "^5.3.3"
+    "@vitest/ui": "^3.2.4",
+    "c8": "^10.1.3",
+    "esbuild": "^0.25.9",
+    "miniflare": "^4.20250823.1",
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.33.1"
   },
   "engines": {
     "node": ">=18.0.0 <23.0.0"

@@ -1,0 +1,98 @@
+name = "clickup-mcp-server"
+main = "dist/worker.js"
+compatibility_date = "2025-01-01"
+node_compat = true
+
+# Account details (replace with your actual account ID)
+account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+# Build configuration
+[build]
+command = "npm run build:worker"
+
+# Development environment
+[env.development]
+name = "clickup-mcp-dev"
+
+kv_namespaces = [
+  { binding = "USER_SESSIONS", id = "dev_user_sessions", preview_id = "dev_user_sessions" },
+  { binding = "API_KEYS", id = "dev_api_keys", preview_id = "dev_api_keys" },
+  { binding = "USER_MAPPINGS", id = "dev_user_mappings", preview_id = "dev_user_mappings" },
+  { binding = "RATE_LIMITS", id = "dev_rate_limits", preview_id = "dev_rate_limits" },
+  { binding = "TOOL_CONFIGS", id = "dev_tool_configs", preview_id = "dev_tool_configs" },
+  { binding = "STRIPE_CUSTOMERS", id = "dev_stripe_customers", preview_id = "dev_stripe_customers" }
+]
+
+r2_buckets = [
+  { binding = "AUDIT_LOGS", bucket_name = "clickup-mcp-audit-dev", preview_bucket_name = "clickup-mcp-audit-dev" }
+]
+
+[env.development.vars]
+ENVIRONMENT = "development"
+ENABLE_AUDIT_LOGGING = "true"
+ENABLE_RATE_LIMITING = "true"
+MAX_REQUESTS_PER_MINUTE = "100"
+# Free tier tools - basic operations
+FREE_TIER_TOOLS = "clickup_workspace_hierarchy,clickup_task_get,clickup_task_create,clickup_task_update,clickup_list_get,clickup_folder_get,clickup_space_get"
+# Premium tier tools - advanced operations
+PREMIUM_TIER_TOOLS = "clickup_task_bulk_create,clickup_task_bulk_update,clickup_task_bulk_move,clickup_task_bulk_delete,clickup_time_tracking_start,clickup_time_tracking_stop,clickup_time_entry_add,clickup_custom_field_set,clickup_custom_field_get,clickup_project_create,clickup_project_update"
+
+# Staging environment
+[env.staging]
+name = "clickup-mcp-staging"
+
+kv_namespaces = [
+  { binding = "USER_SESSIONS", id = "staging_user_sessions" },
+  { binding = "API_KEYS", id = "staging_api_keys" },
+  { binding = "USER_MAPPINGS", id = "staging_user_mappings" },
+  { binding = "RATE_LIMITS", id = "staging_rate_limits" },
+  { binding = "TOOL_CONFIGS", id = "staging_tool_configs" },
+  { binding = "STRIPE_CUSTOMERS", id = "staging_stripe_customers" }
+]
+
+r2_buckets = [
+  { binding = "AUDIT_LOGS", bucket_name = "clickup-mcp-audit-staging" }
+]
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+ENABLE_AUDIT_LOGGING = "true"
+ENABLE_RATE_LIMITING = "true"
+MAX_REQUESTS_PER_MINUTE = "100"
+FREE_TIER_TOOLS = "clickup_workspace_hierarchy,clickup_task_get,clickup_task_create,clickup_task_update,clickup_list_get,clickup_folder_get,clickup_space_get"
+PREMIUM_TIER_TOOLS = "clickup_task_bulk_create,clickup_task_bulk_update,clickup_task_bulk_move,clickup_task_bulk_delete,clickup_time_tracking_start,clickup_time_tracking_stop,clickup_time_entry_add,clickup_custom_field_set,clickup_custom_field_get,clickup_project_create,clickup_project_update"
+
+# Production environment
+[env.production]
+name = "clickup-mcp"
+route = "clickup-mcp.workers.dev/*"
+
+kv_namespaces = [
+  { binding = "USER_SESSIONS", id = "prod_user_sessions" },
+  { binding = "API_KEYS", id = "prod_api_keys" },
+  { binding = "USER_MAPPINGS", id = "prod_user_mappings" },
+  { binding = "RATE_LIMITS", id = "prod_rate_limits" },
+  { binding = "TOOL_CONFIGS", id = "prod_tool_configs" },
+  { binding = "STRIPE_CUSTOMERS", id = "prod_stripe_customers" }
+]
+
+r2_buckets = [
+  { binding = "AUDIT_LOGS", bucket_name = "clickup-mcp-audit-prod" }
+]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+ENABLE_AUDIT_LOGGING = "true"
+ENABLE_RATE_LIMITING = "true"
+MAX_REQUESTS_PER_MINUTE = "60"
+FREE_TIER_TOOLS = "clickup_workspace_hierarchy,clickup_task_get,clickup_task_create,clickup_task_update,clickup_list_get,clickup_folder_get,clickup_space_get"
+PREMIUM_TIER_TOOLS = "clickup_task_bulk_create,clickup_task_bulk_update,clickup_task_bulk_move,clickup_task_bulk_delete,clickup_time_tracking_start,clickup_time_tracking_stop,clickup_time_entry_add,clickup_custom_field_set,clickup_custom_field_get,clickup_project_create,clickup_project_update"
+
+# Secrets (set these using wrangler secret put)
+# wrangler secret put CLICKUP_CLIENT_ID --env production
+# wrangler secret put CLICKUP_CLIENT_SECRET --env production
+# wrangler secret put ENCRYPTION_KEY --env production
+# wrangler secret put JWT_SECRET --env production
+# wrangler secret put STRIPE_SECRET_KEY --env production
+# wrangler secret put STRIPE_WEBHOOK_SECRET --env production
+# wrangler secret put STRIPE_PRICE_ID --env production
