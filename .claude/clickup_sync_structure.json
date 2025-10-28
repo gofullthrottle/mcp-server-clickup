@@ -1,0 +1,430 @@
+{
+  "space_name": "ClickUp MCP Server - Documentation Alignment",
+  "space_id": "90144360426",
+  "phases": {
+    "0": {
+      "name": "Phase 0 - Foundation",
+      "epics": [
+        {
+          "name": "Establish Documentation Standards",
+          "description": "Create comprehensive documentation standards and templates to ensure consistency across all documentation files. This establishes the foundation for all subsequent documentation work.",
+          "duration": 1,
+          "priority": "high",
+          "complexity": "Simple",
+          "wave": 1,
+          "tasks": [
+            {
+              "name": "Copy validation checklist to project ",
+              "minutes": 15,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Create consistency guide ",
+              "minutes": 20,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Create documentation templates ",
+              "minutes": 20,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Set up documentation review process ",
+              "minutes": 5,
+              "agent": "Technical Writer"
+            }
+          ],
+          "acceptance_criteria": [
+            "Validation checklist exists at `.claude/docs/documentation-checklist.md`",
+            "Consistency guide defines all standard terminology",
+            "Three documentation templates created and ready to use",
+            "Templates include all required sections (frontmatter, examples, diagrams)",
+            "Review process documented",
+            "Handoff document created explaining standards for other tasks"
+          ],
+          "dependencies": [
+            "None (Wave 1)"
+          ]
+        }
+      ]
+    },
+    "1": {
+      "name": "Phase 1 - Core Architecture",
+      "epics": [
+        {
+          "name": "Finalize CLAUDE.md",
+          "description": "Complete the remote MCP server architecture documentation in CLAUDE.md, establishing it as the single source of truth for all other documentation.",
+          "duration": 3,
+          "priority": "critical",
+          "complexity": "Standard",
+          "wave": 2,
+          "tasks": [
+            {
+              "name": "Review current CLAUDE.md and git diff ",
+              "minutes": 30,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Update Repository Overview section ",
+              "minutes": 30,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Complete Architecture - Remote MCP Server section ",
+              "minutes": 60,
+              "agent": "Backend Specialist"
+            },
+            {
+              "name": "Update Development Commands section ",
+              "minutes": 20,
+              "agent": "DevOps Specialist"
+            },
+            {
+              "name": "Add/update environment variables section ",
+              "minutes": 20,
+              "agent": "DevOps Specialist"
+            },
+            {
+              "name": "Validate all content against implementation ",
+              "minutes": 20,
+              "agent": "QA Specialist"
+            }
+          ],
+          "acceptance_criteria": [
+            "Repository Overview accurately describes remote SaaS architecture",
+            "Tool count is exactly 72 tools across 12 categories",
+            "Architecture section includes CloudFlare Workers service layer diagram",
+            "OAuth 2.0 + PKCE flow documented with technical accuracy",
+            "JWT session management explained",
+            "Development commands include both Workers and traditional modes",
+            "Environment variables documented for both modes",
+            "All technical details verified against actual implementation code",
+            "No mentions of \"local NPX installation\" or \"STDIO only\"",
+            "Document serves as single source of truth for architecture",
+            "Handoff created documenting architecture for README.md task"
+          ],
+          "dependencies": [
+            "Phase 0.2 (documentation standards - terminology",
+            "templates)"
+          ]
+        },
+        {
+          "name": "Complete README.md Rewrite",
+          "description": "Transform README.md from a local NPX installation guide into a compelling SaaS landing page that clearly positions the product as a remote MCP server with OAuth authentication.",
+          "duration": 5,
+          "priority": "critical",
+          "complexity": "Standard",
+          "wave": 2,
+          "tasks": [
+            {
+              "name": "Review current README and CLAUDE.md handoff ",
+              "minutes": 30,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Create compelling hero section ",
+              "minutes": 45,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Write Free vs Premium comparison table ",
+              "minutes": 30,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Rewrite Quick Start section for OAuth ",
+              "minutes": 60,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Create Tool Categories section ",
+              "minutes": 45,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Add Security & Privacy section ",
+              "minutes": 30,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Update all configuration examples ",
+              "minutes": 45,
+              "agent": "DevOps Specialist"
+            },
+            {
+              "name": "Create troubleshooting section ",
+              "minutes": 30,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Add architecture diagram ",
+              "minutes": 15,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Validate all content and examples ",
+              "minutes": 30,
+              "agent": "QA Specialist"
+            }
+          ],
+          "acceptance_criteria": [
+            "Hero section leads with SaaS value proposition",
+            "Zero mentions of \"NPX installation\" or \"local server\"",
+            "OAuth authentication flow is prominent and clear (Step 1 in Quick Start)",
+            "Free vs Premium comparison table is complete and accurate",
+            "Tool categories section lists all 12 categories with 72 total tools",
+            "Security & Privacy section covers OAuth, encryption, JWT, rate limiting",
+            "All configuration examples use remote MCP endpoint with JWT tokens",
+            "Quick Start achieves first task creation in 5 minutes",
+            "Troubleshooting section addresses common OAuth issues",
+            "Architecture diagram shows remote SaaS flow",
+            "All code examples tested and working",
+            "Professional, polished copy throughout",
+            "Handoff created for future README updates"
+          ],
+          "dependencies": [
+            "Phase 1.1 (CLAUDE.md for architecture reference)",
+            "Phase 0.2 (documentation standards)"
+          ]
+        }
+      ]
+    },
+    "2": {
+      "name": "Phase 2 - Feature Documentation",
+      "epics": [
+        {
+          "name": "OAuth & Authentication Documentation",
+          "description": "Create comprehensive OAuth 2.0 + PKCE authentication documentation with flow diagrams, JWT token management, and troubleshooting guide.",
+          "duration": 4,
+          "priority": "high",
+          "complexity": "Standard",
+          "wave": 3,
+          "tasks": [
+            {
+              "name": "Create docs/AUTHENTICATION.md file ",
+              "minutes": 10,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Document OAuth 2.0 + PKCE flow ",
+              "minutes": 90,
+              "agent": "Backend Specialist"
+            },
+            {
+              "name": "Document JWT session management ",
+              "minutes": 60,
+              "agent": "Backend Specialist"
+            },
+            {
+              "name": "Document token refresh flow ",
+              "minutes": 30,
+              "agent": "Backend Specialist"
+            },
+            {
+              "name": "Add authentication troubleshooting ",
+              "minutes": 45,
+              "agent": "Technical Writer"
+            },
+            {
+              "name": "Include security best practices ",
+              "minutes": 30,
+              "agent": "Security Specialist"
+            },
+            {
+              "name": "Create code examples ",
+              "minutes": 45,
+              "agent": "Backend Specialist"
+            }
+          ],
+          "acceptance_criteria": [
+            "docs/AUTHENTICATION.md created with complete OAuth documentation",
+            "OAuth 2.0 + PKCE flow fully explained with Mermaid sequence diagram",
+            "JWT token lifecycle documented (creation, storage, refresh, expiration)",
+            "Token refresh procedure clearly explained",
+            "All common authentication errors documented with solutions",
+            "Security best practices included",
+            "Code examples provided in Python, TypeScript, and cURL",
+            "Technical accuracy verified against src/auth/oauth-service.ts",
+            "Diagrams are clear and easy to understand",
+            "Non-technical users can follow the flow",
+            "Handoff created documenting OAuth patterns for troubleshooting guide"
+          ],
+          "dependencies": [
+            "Phase 1.1 (CLAUDE.md for OAuth architecture)"
+          ]
+        },
+        {
+          "name": "Premium Features Documentation",
+          "description": "Document the subscription model, premium features, Stripe integration, and upgrade procedures.",
+          "duration": 3,
+          "priority": "high",
+          "complexity": "Standard",
+          "wave": 3,
+          "tasks": [
+            {
+              "name": "Create docs/PREMIUM_FEATURES.md ",
+              "minutes": 10,
+              "agent": "General"
+            },
+            {
+              "name": "Expand Free vs Premium comparison ",
+              "minutes": 60,
+              "agent": "General"
+            },
+            {
+              "name": "Document all premium-only tools ",
+              "minutes": 40,
+              "agent": "General"
+            },
+            {
+              "name": "Document Stripe integration ",
+              "minutes": 30,
+              "agent": "General"
+            },
+            {
+              "name": "Add upgrade/downgrade procedures ",
+              "minutes": 30,
+              "agent": "General"
+            },
+            {
+              "name": "Create billing FAQ ",
+              "minutes": 30,
+              "agent": "General"
+            }
+          ],
+          "acceptance_criteria": [
+            "Complete premium features documentation created",
+            "Free vs Premium comparison table comprehensive",
+            "All 40+ premium tools documented",
+            "Stripe integration explained",
+            "Upgrade/downgrade procedures clear",
+            "Billing FAQ addresses common questions"
+          ],
+          "dependencies": [
+            "Phase 1.1 (CLAUDE.md)"
+          ]
+        },
+        {
+          "name": "Security Documentation",
+          "description": "Comprehensive security and privacy documentation covering encryption, JWT security, rate limiting, audit logging, and GDPR compliance.",
+          "duration": 4,
+          "priority": "high",
+          "complexity": "Standard",
+          "wave": 3,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "Complete Tool Reference Documentation",
+          "description": "Document all 72 tools across 12 categories with examples, tier markers, and usage patterns.",
+          "duration": 6,
+          "priority": "high",
+          "complexity": "Complex",
+          "wave": 3,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "API Reference Updates",
+          "description": "Document remote MCP endpoints, authentication headers, error codes, rate limiting, and transport options.",
+          "duration": 4,
+          "priority": "high",
+          "complexity": "Standard",
+          "wave": 3,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        }
+      ]
+    },
+    "3": {
+      "name": "Phase 3 - Developer Experience",
+      "epics": [
+        {
+          "name": "Update DEPLOYMENT.md",
+          "description": "Review and update deployment documentation for CloudFlare Workers with environment configuration, KV/R2 setup, and CI/CD pipeline.",
+          "duration": 2,
+          "priority": "medium",
+          "complexity": "Simple",
+          "wave": 4,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "Developer Setup Guide",
+          "description": "Comprehensive local development setup guide with Wrangler, testing procedures, and contribution guidelines.",
+          "duration": 3,
+          "priority": "medium",
+          "complexity": "Standard",
+          "wave": 4,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "Troubleshooting & FAQ Documentation",
+          "description": "Comprehensive troubleshooting guide with common issues, solutions, and FAQ section.",
+          "duration": 2,
+          "priority": "medium",
+          "complexity": "Simple",
+          "wave": 4,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "Migration Guide",
+          "description": "Help users transition from old local setup to new remote SaaS with rationale and side-by-side comparison.",
+          "duration": 1,
+          "priority": "low",
+          "complexity": "Simple",
+          "wave": 4,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        }
+      ]
+    },
+    "4": {
+      "name": "Phase 4 - Validation & Polish",
+      "epics": [
+        {
+          "name": "Documentation Consistency Review",
+          "description": "Validate consistency across all 10+ documentation files for terminology, architecture descriptions, tool counts, and cross-references.",
+          "duration": 2,
+          "priority": "high",
+          "complexity": "Standard",
+          "wave": 5,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "Example Code Validation",
+          "description": "Test all code examples and configuration snippets in documentation to ensure they work correctly.",
+          "duration": 2,
+          "priority": "high",
+          "complexity": "Standard",
+          "wave": 5,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        },
+        {
+          "name": "User Journey Testing",
+          "description": "Walk through complete user experiences following the documentation to identify gaps or confusing sections.",
+          "duration": 1,
+          "priority": "high",
+          "complexity": "Simple",
+          "wave": 5,
+          "tasks": [],
+          "acceptance_criteria": [],
+          "dependencies": []
+        }
+      ]
+    }
+  }
+}
