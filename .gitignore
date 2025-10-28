@@ -50,3 +50,8 @@ ssl/
 *.pem
 *.p12
 *.pfx
+
+# CloudFlare secrets and credentials
+.cloudflare-secrets/
+*.secret
+wrangler-secrets.txt
