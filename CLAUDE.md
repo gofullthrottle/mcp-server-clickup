@@ -4,7 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-ClickUp MCP Server - A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to securely interact with ClickUp workspaces through OAuth authentication. Provides 72+ tools across 12 categories for comprehensive task management, time tracking, and workspace operations.
+ClickUp MCP Server - A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to securely interact with ClickUp workspaces through OAuth 2.0 + PKCE authentication. Provides 72 tools across 12 categories for comprehensive task management, time tracking, and workspace operations.
+
+## Tool Categories
+
+The Remote MCP Server provides **72 tools across 12 categories**:
+
+| Category | Tool Count | Description |
+|----------|------------|-------------|
+| **Task Management** | 27 | Create, update, search, and manage tasks with full CRUD operations |
+| **List Management** | 12 | Organize tasks into lists, manage list settings and permissions |
+| **Workspace Operations** | 8 | Manage workspace hierarchy, spaces, and team structure |
+| **Time Tracking** | 6 | Track time, manage time entries, and generate time reports |
+| **Custom Fields** | 5 | Create and manage custom fields for tasks and lists |
+| **Space Management** | 4 | Organize work into spaces with tags and settings |
+| **Goal Tracking** | 3 | Create and monitor goals with key results |
+| **User Management** | 2 | Manage user accounts and permissions |
+| **Team Management** | 2 | Handle team configuration and member roles |
+| **Comment Management** | 2 | Add and manage comments on tasks |
+| **View Management** | 1 | Create and configure custom views |
+| **Other** | 1 | Additional utility tools |
+
+All tools are tested and validated via `test-all-tools-ultrathink.js` which performs comprehensive ultra-think analysis.
 
 ## Build and Development Commands
 
@@ -29,6 +50,59 @@ node test-all-tools-ultrathink.js  # Test all 72 tools
 ## Architecture - Remote MCP Server
 
 ### CloudFlare Workers SaaS Architecture
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        User[AI Agent/Client]
+    end
+
+    subgraph "CloudFlare Workers - Remote MCP Server"
+        Worker[Worker Entry Point<br/>src/worker.ts]
+        OAuth[OAuth Service<br/>OAuth 2.0 + PKCE]
+        UserMgmt[User Service<br/>Multi-tenant Isolation]
+        MCPServer[MCP Protocol Handler<br/>HTTP Streamable]
+        Tools[Tool Layer<br/>72 Tools - 12 Categories]
+        Security[Security Layer<br/>Encryption + Audit + Rate Limit]
+    end
+
+    subgraph "Storage Layer"
+        KV[(CloudFlare KV<br/>Sessions + API Keys)]
+        R2[(CloudFlare R2<br/>Audit Logs)]
+    end
+
+    subgraph "External Services"
+        ClickUp[ClickUp API v2]
+        Stripe[Stripe<br/>Premium Billing]
+    end
+
+    User -->|1. OAuth Login| Worker
+    Worker -->|2. Redirect| OAuth
+    OAuth -->|3. Authorize| ClickUp
+    ClickUp -->|4. Access Token| OAuth
+    OAuth -->|5. Encrypt & Store| UserMgmt
+    UserMgmt -->|Store| KV
+
+    User -->|6. MCP Request<br/>JWT Bearer Token| MCPServer
+    MCPServer -->|7. Validate JWT| UserMgmt
+    UserMgmt -->|8. Decrypt API Key| KV
+    MCPServer -->|9. Route to Tool| Tools
+    Tools -->|10. ClickUp API Call| ClickUp
+    ClickUp -->|11. Response| Tools
+    Tools -->|12. MCP Response| User
+
+    Security -->|Rate Limit| Tools
+    Security -->|Audit Log| R2
+    UserMgmt -->|Check Tier| Stripe
+
+    style User fill:#e1f5ff
+    style Worker fill:#fff9e1
+    style OAuth fill:#ffe1e1
+    style KV fill:#e1ffe1
+    style R2 fill:#e1ffe1
+    style ClickUp fill:#e1e1ff
+```
+
 The codebase implements a **remote MCP server** on CloudFlare Workers with multi-tenant OAuth authentication:
 
 - **Worker Entry Point** (`src/worker.ts`) - Hono-based HTTP handler with OAuth endpoints
@@ -232,3 +306,42 @@ Custom fields are handled through TaskServiceCustomFields. When adding support t
 - **Tool Count**: Server provides 72 tools across 12 categories (verified via ultra-think testing)
 - **Error Handling**: Provide clear, actionable error messages for all failure modes
 - **Testing**: Use comprehensive testing methodology to validate all tools
+
+---
+
+## Documentation Handoff Notes
+
+### For Phase 1.2 (README.md Rewrite)
+
+**Architecture Established:** This CLAUDE.md now serves as the single source of truth for the Remote MCP Server architecture. All information in README.md should align with the architecture described here.
+
+**Key Points to Emphasize in README.md:**
+1. **Remote SaaS Model:** CloudFlare Workers-hosted, not local installation
+2. **OAuth Authentication:** OAuth 2.0 + PKCE flow, not API key environment variables
+3. **Exact Tool Count:** 72 tools across 12 categories (see Tool Categories section above)
+4. **Premium Tier:** $4.99/month for enhanced rate limits (500 req/min) and premium tools
+5. **JWT Sessions:** 24-hour session tokens with Bearer authentication
+6. **Multi-Tenancy:** Complete user isolation with encrypted API key storage
+
+**Prohibited Terms in README.md:**
+- ❌ "Local server", "NPX installation", "STDIO"
+- ❌ "36 tools" or any count other than "72 tools across 12 categories"
+- ❌ "API key environment variables" as primary setup
+- ❌ "Cloudflare" (wrong capitalization - use "CloudFlare")
+
+**Required Sections for README.md:**
+1. Hero section with SaaS value proposition
+2. OAuth Quick Start (5-minute first task creation)
+3. Free vs Premium comparison table
+4. Tool Categories summary (reference this document's table)
+5. Security & Privacy section (OAuth, encryption, JWT)
+6. Architecture diagram (can reference or embed the Mermaid diagram above)
+
+**Reference Files:**
+- Tool categories: See "Tool Categories" section above
+- Architecture diagram: See "CloudFlare Workers SaaS Architecture" section
+- Environment variables: See "Environment Variables > CloudFlare Workers Environment"
+- Consistency guide: `.claude/docs/consistency-guide.md`
+- OAuth template: `.claude/docs/templates/OAUTH.md.template`
+
+This CLAUDE.md was finalized as part of Phase 1.1 (Wave 2) and is ready for Phase 1.2 (README.md rewrite).
