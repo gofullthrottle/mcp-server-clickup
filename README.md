@@ -8,15 +8,15 @@
 
 **Securely connect your ClickUp workspace to AI assistants without managing API keys.**
 
-A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to interact with ClickUp workspaces through secure OAuth authentication. Transform your task management workflow with **72+ tools** across 12 categories.
+A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to interact with ClickUp workspaces through OAuth 2.0 + PKCE authentication. Transform your task management workflow with **72 tools across 12 categories**.
 
 > 🚀 **Ready to get started?** [Authenticate with ClickUp →](https://clickup-mcp.workers.dev/auth/login)
 
 ## ✨ Key Benefits
 
-- **🔐 Zero API Key Management** - Secure OAuth 2.0 authentication
+- **🔐 Zero API Key Management** - OAuth 2.0 + PKCE secure authentication
 - **☁️ Always Available** - Hosted on CloudFlare Workers global network
-- **🚀 72+ Tools** - Comprehensive ClickUp integration
+- **🚀 72 Tools Across 12 Categories** - Comprehensive ClickUp integration
 - **💎 Free & Premium Tiers** - Start free, upgrade for advanced features
 - **🛡️ Enterprise Security** - Encrypted storage, audit logging, rate limiting
 - **⚡ Lightning Fast** - Sub-100ms response times globally
@@ -37,38 +37,39 @@ A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to inter
 
 ## 🚀 Quick Start (5 minutes)
 
-### Step 1: Authenticate with ClickUp
+### Step 1: Authenticate with ClickUp OAuth
 
-Visit the authentication page and authorize with your ClickUp account:
+Click the authentication link to start the secure OAuth 2.0 + PKCE flow:
 
 ```
 https://clickup-mcp.workers.dev/auth/login
 ```
 
-You'll receive a JWT session token after authorization.
+**What happens:**
+1. You'll be redirected to ClickUp's authorization page
+2. Log in and authorize access to your workspace
+3. ClickUp redirects back with an authorization code
+4. The server securely exchanges the code for an access token
+5. Your access token is encrypted and stored securely
+6. You receive a JWT session token (24-hour lifetime)
 
-### Step 2: Get Your ClickUp API Key
+**Security Note:** You never expose your ClickUp API key! OAuth handles all authentication automatically and securely.
 
-1. Log into [ClickUp](https://app.clickup.com)
-2. Go to **Settings** → **Apps** → **API Token**
-3. Generate or copy your personal API token
-4. Find your Team ID in your workspace URL
+### Step 2: Save Your JWT Session Token
 
-### Step 3: Store API Key Securely
+After authorization, you'll receive a JWT token. Save it securely - you'll need it to configure your AI client.
 
-Using your JWT token from Step 1:
-
-```bash
-curl -X POST https://clickup-mcp.workers.dev/auth/api-key \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "api_key": "pk_YOUR_CLICKUP_API_KEY",
-    "team_id": "YOUR_TEAM_ID"
-  }'
+**Example JWT token:**
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzNDU2Iiwi...
 ```
 
-### Step 4: Configure Your AI Client
+**Token Details:**
+- 24-hour lifetime (auto-expires for security)
+- Use `/auth/refresh` endpoint to renew before expiry
+- Stored JWT contains: user ID, workspace ID, tier level
+
+### Step 3: Configure Your AI Client
 
 #### Claude Desktop Configuration
 
@@ -96,7 +97,7 @@ Most MCP-compatible clients support remote servers. Use:
 - **Authentication**: Bearer token in headers
 - **Transport**: HTTP Streamable (recommended)
 
-## 🛠️ Available Tools (72 Total)
+## 🛠️ Available Tools (72 Across 12 Categories)
 
 ### Core Tools (Free Tier)
 
@@ -127,18 +128,20 @@ Most MCP-compatible clients support remote servers. Use:
 ```
 📊 Total: 72 tools across 12 categories
 ┣━ 📝 Task Management: 27 tools (core CRUD + advanced features)
-┣━ 📋 List Management: 8 tools (organization)
-┣━ 🏢 Space Management: 6 tools (workspace)
-┣━ 🔧 Custom Fields: 6 tools (metadata)
-┣━ ⏱️ Time Tracking: 5 tools (productivity)
-┣━ 📊 Project Management: 5 tools (planning)
-┣━ 📄 Document Management: 5 tools (knowledge)
-┣━ 📁 Folder Management: 4 tools (structure)
-┣━ 🌐 Workspace: 3 tools (navigation)
-┣━ 🏷️ Tags: 1 tool (organization)
-┣━ 👥 Members: 1 tool (collaboration)
+┣━ 📋 List Management: 12 tools (organization and list operations)
+┣━ 🌐 Workspace Operations: 8 tools (hierarchy and workspace navigation)
+┣━ ⏱️ Time Tracking: 6 tools (productivity and time management)
+┣━ 🔧 Custom Fields: 5 tools (metadata and custom properties)
+┣━ 🏢 Space Management: 4 tools (space organization)
+┣━ 🎯 Goal Tracking: 3 tools (OKRs and goal management)
+┣━ 👤 User Management: 2 tools (user accounts and permissions)
+┣━ 👥 Team Management: 2 tools (team configuration)
+┣━ 💬 Comment Management: 2 tools (task discussions)
+┣━ 👁️ View Management: 1 tool (custom views)
 ┗━ 🔗 Other: 1 tool (utilities)
 ```
+
+All tools tested and validated via `test-all-tools-ultrathink.js`
 
 ## 💎 Upgrade to Premium
 
@@ -185,6 +188,68 @@ Complete payment through Stripe's secure checkout and premium features activate 
 ❌ Task content or descriptions
 ❌ Unencrypted sensitive data
 ❌ Personal information beyond email
+
+## 🏗️ Architecture
+
+The Remote MCP Server uses a secure, scalable architecture on CloudFlare Workers:
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        User[AI Agent/Client]
+    end
+
+    subgraph "CloudFlare Workers - Remote MCP Server"
+        Worker[Worker Entry Point]
+        OAuth[OAuth 2.0 + PKCE Service]
+        UserMgmt[User Service<br/>Multi-tenant Isolation]
+        MCPServer[MCP Protocol Handler<br/>HTTP Streamable]
+        Tools[Tool Layer<br/>72 Tools - 12 Categories]
+        Security[Security Layer<br/>Encryption + Audit]
+    end
+
+    subgraph "Storage"
+        KV[(CloudFlare KV<br/>Encrypted Sessions)]
+        R2[(CloudFlare R2<br/>Audit Logs)]
+    end
+
+    subgraph "External"
+        ClickUp[ClickUp API v2]
+        Stripe[Stripe Billing]
+    end
+
+    User -->|1. OAuth Login| Worker
+    Worker --> OAuth
+    OAuth -->|2. Authorize| ClickUp
+    ClickUp -->|3. Access Token| OAuth
+    OAuth -->|4. Encrypt & Store| UserMgmt
+    UserMgmt -->|Store| KV
+
+    User -->|5. MCP Request + JWT| MCPServer
+    MCPServer -->|6. Validate| UserMgmt
+    UserMgmt -->|7. Decrypt Key| KV
+    MCPServer -->|8. Route| Tools
+    Tools -->|9. ClickUp API| ClickUp
+    ClickUp -->|10. Response| User
+
+    Security -->|Rate Limit| Tools
+    Security -->|Audit| R2
+    UserMgmt -->|Check Tier| Stripe
+
+    style User fill:#e1f5ff
+    style Worker fill:#fff9e1
+    style OAuth fill:#ffe1e1
+    style KV fill:#e1ffe1
+    style ClickUp fill:#e1e1ff
+```
+
+**Architecture Highlights:**
+- **OAuth 2.0 + PKCE**: Secure authorization without exposing API keys
+- **JWT Sessions**: Stateless authentication with 24-hour tokens
+- **AES-256-GCM Encryption**: All API keys encrypted at rest in CloudFlare KV
+- **Multi-Tenancy**: Complete user isolation with per-user rate limiting
+- **Global Edge**: Deployed on CloudFlare's 300+ data centers worldwide
+- **Audit Trail**: All actions logged to CloudFlare R2 for security monitoring
 
 ## 🚀 Usage Examples
 
@@ -362,7 +427,7 @@ GET  /metrics          - Usage statistics
 ## 📈 Roadmap
 
 ### Current (v1.0)
-- ✅ OAuth authentication with ClickUp
+- ✅ OAuth 2.0 + PKCE authentication with ClickUp
 - ✅ 72 tools across 12 categories
 - ✅ Free and Premium tiers
 - ✅ Enterprise security features
@@ -383,7 +448,7 @@ GET  /metrics          - Usage statistics
 - **Enterprise**: Custom pricing - Team features, SSO, dedicated support
 
 All plans include:
-- ✅ Secure OAuth authentication
+- ✅ Secure OAuth 2.0 + PKCE authentication
 - ✅ Encrypted data storage
 - ✅ Global CloudFlare infrastructure
 - ✅ 99.9% uptime SLA
