@@ -3,30 +3,42 @@
  * SPDX-License-Identifier: MIT
  *
  * Logger module for MCP Server
- * 
- * This module provides logging functionality for the server,
- * writing logs to only the log file to avoid interfering with JSON-RPC.
+ *
+ * This module provides logging functionality that works in both Node.js and CloudFlare Workers environments.
+ * In Node.js: writes to log file
+ * In CloudFlare Workers: uses console logging
  */
 
-import { createWriteStream } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import config, { LogLevel } from './config.js';
+import { LogLevel } from './config.js';
 
-// Get the directory name of the current module
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// Detect environment - CloudFlare Workers don't have process.env.NODE_ENV set typically
+const isNode = typeof process !== 'undefined' && process.versions && process.versions.node;
+const isBrowser = typeof window !== 'undefined';
 
-// Current process ID for logging
-const pid = process.pid;
+// Use INFO level by default in Workers, can be overridden via env
+const configuredLevel = LogLevel.INFO;
 
-// Create a write stream for logging - use a fixed filename in the build directory
-const logFileName = 'server.log';
-const logStream = createWriteStream(join(__dirname, logFileName), { flags: 'w' });
-// Write init message to log file only
-logStream.write(`Logging initialized to ${join(__dirname, logFileName)}\n`);
+let logStream: any = null;
+let pid: number | string = 'worker';
 
-// Use the configured log level from config.ts
-const configuredLevel = config.logLevel;
+// Only set up file logging in Node.js environment
+if (isNode && !isBrowser) {
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const url = await import('url');
+    const config = await import('./config.js');
+
+    const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+    pid = process.pid;
+    const logFileName = 'server.log';
+    logStream = fs.createWriteStream(path.join(__dirname, logFileName), { flags: 'w' });
+    logStream.write(`Logging initialized to ${path.join(__dirname, logFileName)}\n`);
+  } catch (e) {
+    // If imports fail, we're in Workers environment - use console
+    console.log('Logger: Running in CloudFlare Workers mode');
+  }
+}
 
 // Re-export LogLevel enum
 export { LogLevel };
@@ -41,42 +53,42 @@ function isLevelEnabled(level: LogLevel): boolean {
 }
 
 /**
- * Log function that writes only to file to avoid interfering with JSON-RPC
+ * Log function that writes to file (Node.js) or console (Workers)
  * @param level Log level (trace, debug, info, warn, error)
  * @param message Message to log
  * @param data Optional data to include in log
  */
 function log(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', message: string, data?: any) {
-  const levelEnum = level === 'trace' ? LogLevel.TRACE 
+  const levelEnum = level === 'trace' ? LogLevel.TRACE
     : level === 'debug' ? LogLevel.DEBUG
     : level === 'info' ? LogLevel.INFO
-    : level === 'warn' ? LogLevel.WARN 
+    : level === 'warn' ? LogLevel.WARN
     : LogLevel.ERROR;
-  
+
   // Skip if level is below configured level
   if (!isLevelEnabled(levelEnum)) {
     return;
   }
-  
+
   const timestamp = new Date().toISOString();
-  
+
   // Format the log message differently based on the level and data
   let logMessage = `[${timestamp}] [PID:${pid}] ${level.toUpperCase()}: ${message}`;
-  
+
   // Format data differently based on content and log level
   if (data) {
     // For debugging and trace levels, try to make the data more readable
     if (level === 'debug' || level === 'trace') {
       // If data is a simple object with few properties, format it inline
-      if (typeof data === 'object' && data !== null && !Array.isArray(data) && 
-          Object.keys(data).length <= 4 && Object.keys(data).every(k => 
+      if (typeof data === 'object' && data !== null && !Array.isArray(data) &&
+          Object.keys(data).length <= 4 && Object.keys(data).every(k =>
             typeof data[k] !== 'object' || data[k] === null)) {
         const dataStr = Object.entries(data)
-          .map(([k, v]) => `${k}=${v === undefined ? 'undefined' : 
-            (v === null ? 'null' : 
+          .map(([k, v]) => `${k}=${v === undefined ? 'undefined' :
+            (v === null ? 'null' :
               (typeof v === 'string' ? `"${v}"` : v))}`)
           .join(' ');
-        
+
         logMessage += ` (${dataStr})`;
       } else {
         // For more complex data, keep the JSON format but on new lines
@@ -88,8 +100,19 @@ function log(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', message: stri
     }
   }
 
-  // Write to file only, not to stderr which would interfere with JSON-RPC
-  logStream.write(logMessage + '\n');
+  // Write to file (Node.js) or console (Workers)
+  if (logStream) {
+    logStream.write(logMessage + '\n');
+  } else {
+    // CloudFlare Workers - use console
+    if (level === 'error') {
+      console.error(logMessage);
+    } else if (level === 'warn') {
+      console.warn(logMessage);
+    } else {
+      console.log(logMessage);
+    }
+  }
 }
 
 /**
@@ -179,10 +202,12 @@ export class Logger {
   }
 }
 
-// Handle SIGTERM for clean shutdown
-process.on('SIGTERM', () => {
-  log('info', 'Received SIGTERM signal, shutting down...');
-  logStream.end(() => {
-    process.exit(0);
+// Handle SIGTERM for clean shutdown (Node.js only)
+if (isNode && logStream) {
+  process.on('SIGTERM', () => {
+    log('info', 'Received SIGTERM signal, shutting down...');
+    logStream.end(() => {
+      process.exit(0);
+    });
   });
-}); 
+} 

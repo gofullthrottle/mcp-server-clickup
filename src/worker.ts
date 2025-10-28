@@ -1,14 +1,16 @@
+/// <reference types="@cloudflare/workers-types" />
+
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { SignJWT, jwtVerify } from 'jose';
 import Stripe from 'stripe';
-import { MCPServer } from './mcp-worker-server';
-import { OAuthService } from './auth/oauth-service';
-import { UserService } from './services/user-service';
-import { EncryptionService } from './security/encryption';
-import { RateLimiter } from './middleware/rate-limit';
-import { AuditLogger } from './security/audit';
+import { MCPServer } from './mcp-worker-server.js';
+import { OAuthService } from './auth/oauth-service.js';
+import { UserService } from './services/user-service.js';
+import { EncryptionService } from './security/encryption.js';
+import { RateLimiter } from './middleware/rate-limit.js';
+import { AuditLogger } from './security/audit.js';
 
 export interface Env {
   // KV Namespaces
@@ -18,7 +20,7 @@ export interface Env {
   RATE_LIMITS: KVNamespace;
   TOOL_CONFIGS: KVNamespace;
   STRIPE_CUSTOMERS: KVNamespace;
-  
+
   // R2 Buckets
   AUDIT_LOGS: R2Bucket;
   

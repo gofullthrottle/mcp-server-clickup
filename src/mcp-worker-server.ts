@@ -6,9 +6,9 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
-import { Env } from './worker';
-import { clickUpServices } from './services/shared';
-import { configureServer } from './server';
+import { Env } from './worker.js';
+import { clickUpServices } from './services/shared.js';
+import { configureServer } from './server.js';
 
 export interface MCPConfig {
   apiKey: string;
@@ -43,18 +43,16 @@ export class MCPServer {
   private async initializeTools() {
     // Import all tool definitions
     const toolModules = [
-      await import('./tools/workspace'),
-      await import('./tools/task'),
-      await import('./tools/time-tracking'),
-      await import('./tools/list'),
-      await import('./tools/folder'),
-      await import('./tools/tag'),
-      await import('./tools/member'),
-      await import('./tools/space'),
-      await import('./tools/dependencies'),
-      await import('./tools/custom-fields'),
-      await import('./tools/project'),
-      await import('./tools/advanced-task')
+      await import('./tools/workspace.js'),
+      await import('./tools/task/index.js'),
+      await import('./tools/list.js'),
+      await import('./tools/folder.js'),
+      await import('./tools/tag.js'),
+      await import('./tools/member.js'),
+      await import('./tools/space.js'),
+      await import('./tools/custom-fields.js'),
+      await import('./tools/project.js'),
+      await import('./tools/documents.js')
     ];
 
     // Collect all tools
@@ -178,7 +176,7 @@ export class MCPServer {
   private async getToolHandlers() {
     // Import and return all tool handlers
     // This would be optimized in production to lazy-load
-    const { toolHandlers } = await import('./tools/handlers');
+    const { toolHandlers } = await import('./tools/handlers.js');
     return toolHandlers;
   }
 
