@@ -4,7 +4,7 @@ description: Comprehensive security documentation for ClickUp MCP Server includi
 keywords: [security, encryption, aes-256-gcm, jwt, oauth, rate-limiting, audit-logging, gdpr, compliance, cloudflare-workers]
 category: security
 ai_tags: [security-architecture, encryption, authentication, compliance, monitoring]
-last_updated: 2025-01-28
+last_updated: 2025-10-28
 ---
 
 # Security Architecture & Best Practices
@@ -1405,5 +1405,5 @@ npm install jsonwebtoken
 
 ---
 
-*Last Updated: 2025-01-28*
+*Last Updated: 2025-10-28*
 *For security issues, contact: security@yourapp.com*

@@ -4,7 +4,7 @@ description: Complete API reference for ClickUp MCP Server remote endpoints incl
 keywords: [api-reference, mcp-protocol, remote-mcp, http-streamable, authentication-headers, error-codes, rate-limiting]
 category: api
 ai_tags: [api-documentation, mcp-protocol, rest-api, endpoints, authentication]
-last_updated: 2025-01-28
+last_updated: 2025-10-28
 ---
 
 # API Reference - Remote MCP Server
@@ -1268,5 +1268,5 @@ console.log(result);
 
 ---
 
-*Last Updated: 2025-01-28*
+*Last Updated: 2025-10-28*
 *For questions or issues, see [Troubleshooting Guide](TROUBLESHOOTING.md)*

@@ -4,7 +4,7 @@ description: Comprehensive reference documentation for all 72 tools across 12 ca
 keywords: [mcp-tools, clickup-api, task-management, workspace-tools, remote-mcp-server, tool-reference]
 category: tool-reference
 ai_tags: [mcp-tools, clickup-integration, api-reference, tool-documentation]
-last_updated: 2025-01-28
+last_updated: 2025-10-28
 ---
 
 # Complete Tool Reference
@@ -2540,5 +2540,5 @@ async function callToolWithRetry(toolName: string, args: any, maxRetries = 3) {
 
 ---
 
-*Last Updated: 2025-01-28*
+*Last Updated: 2025-10-28*
 *For questions or issues, see [Troubleshooting Guide](TROUBLESHOOTING.md)*
