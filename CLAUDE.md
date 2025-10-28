@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-ClickUp MCP Server - A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to securely interact with ClickUp workspaces through OAuth 2.0 + PKCE authentication. Provides 72 tools across 12 categories for comprehensive task management, time tracking, and workspace operations.
+ClickUp MCP Server - A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to securely interact with ClickUp workspaces through OAuth 2.0 authentication. Provides 72 tools across 12 categories for comprehensive task management, time tracking, and workspace operations.
 
 ## Tool Categories
 
@@ -59,7 +59,7 @@ graph TB
 
     subgraph "CloudFlare Workers - Remote MCP Server"
         Worker[Worker Entry Point<br/>src/worker.ts]
-        OAuth[OAuth Service<br/>OAuth 2.0 + PKCE]
+        OAuth[OAuth Service<br/>OAuth 2.0]
         UserMgmt[User Service<br/>Multi-tenant Isolation]
         MCPServer[MCP Protocol Handler<br/>HTTP Streamable]
         Tools[Tool Layer<br/>72 Tools - 12 Categories]
@@ -106,7 +106,7 @@ graph TB
 The codebase implements a **remote MCP server** on CloudFlare Workers with multi-tenant OAuth authentication:
 
 - **Worker Entry Point** (`src/worker.ts`) - Hono-based HTTP handler with OAuth endpoints
-- **OAuth Service** (`src/auth/`) - ClickUp OAuth 2.0 + PKCE implementation
+- **OAuth Service** (`src/auth/`) - ClickUp OAuth 2.0 implementation
 - **User Management** (`src/services/user-service.ts`) - Multi-tenant user isolation and API key encryption
 - **Security Layer** (`src/security/`) - Encryption, audit logging, rate limiting
 - **Transport Layer** - HTTP Streamable for remote MCP protocol, SSE for legacy support
@@ -121,7 +121,7 @@ Also supports traditional local MCP server mode:
 ### Key Architectural Principles
 
 1. **Multi-Tenancy**: User isolation with encrypted API key storage and session management
-2. **OAuth Security**: PKCE-enhanced OAuth 2.0 flow with JWT session tokens
+2. **OAuth Security**: OAuth 2.0 flow with JWT session tokens
 3. **Composition over Inheritance**: TaskService uses composition pattern - follow this pattern when extending
 4. **Service Separation**: Each ClickUp entity has its own service - maintain this separation
 5. **Tool-Service Delegation**: Tools handle MCP protocol, services handle ClickUp API
@@ -156,7 +156,7 @@ Also supports traditional local MCP server mode:
 - Used by task creation/update tools for due dates
 
 ### Authentication & Security (`src/auth/`, `src/security/`)
-- **OAuth 2.0 + PKCE**: Secure ClickUp authentication without API key exposure
+- **OAuth 2.0**: Secure ClickUp authentication without API key exposure
 - **JWT Sessions**: 24-hour session tokens with automatic refresh
 - **AES-256-GCM Encryption**: All stored API keys encrypted at rest
 - **Rate Limiting**: Per-user limits (100/min free, 500/min premium)
@@ -317,7 +317,7 @@ Custom fields are handled through TaskServiceCustomFields. When adding support t
 
 **Key Points to Emphasize in README.md:**
 1. **Remote SaaS Model:** CloudFlare Workers-hosted, not local installation
-2. **OAuth Authentication:** OAuth 2.0 + PKCE flow, not API key environment variables
+2. **OAuth Authentication:** OAuth 2.0 flow, not API key environment variables
 3. **Exact Tool Count:** 72 tools across 12 categories (see Tool Categories section above)
 4. **Premium Tier:** $4.99/month for enhanced rate limits (500 req/min) and premium tools
 5. **JWT Sessions:** 24-hour session tokens with Bearer authentication

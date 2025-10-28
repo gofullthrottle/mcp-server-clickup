@@ -8,13 +8,13 @@
 
 **Securely connect your ClickUp workspace to AI assistants without managing API keys.**
 
-A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to interact with ClickUp workspaces through OAuth 2.0 + PKCE authentication. Transform your task management workflow with **72 tools across 12 categories**.
+A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to interact with ClickUp workspaces through OAuth 2.0 authentication. Transform your task management workflow with **72 tools across 12 categories**.
 
 > 🚀 **Ready to get started?** [Authenticate with ClickUp →](https://clickup-mcp.workers.dev/auth/login)
 
 ## ✨ Key Benefits
 
-- **🔐 Zero API Key Management** - OAuth 2.0 + PKCE secure authentication
+- **🔐 Zero API Key Management** - OAuth 2.0 secure authentication
 - **☁️ Always Available** - Hosted on CloudFlare Workers global network
 - **🚀 72 Tools Across 12 Categories** - Comprehensive ClickUp integration
 - **💎 Free & Premium Tiers** - Start free, upgrade for advanced features
@@ -39,7 +39,7 @@ A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to inter
 
 ### Step 1: Authenticate with ClickUp OAuth
 
-Click the authentication link to start the secure OAuth 2.0 + PKCE flow:
+Click the authentication link to start the secure OAuth 2.0 flow:
 
 ```
 https://clickup-mcp.workers.dev/auth/login
@@ -169,7 +169,7 @@ Complete payment through Stripe's secure checkout and premium features activate 
 ### How We Protect Your Data
 
 - **🔐 AES-256-GCM Encryption** - All API keys encrypted at rest
-- **🛡️ OAuth 2.0 + PKCE** - Industry-standard secure authentication
+- **🛡️ OAuth 2.0** - Industry-standard secure authentication
 - **⏰ Session Management** - JWT tokens auto-expire after 24 hours
 - **📊 Audit Logging** - Complete action history for security monitoring
 - **🚪 User Isolation** - Complete data separation between users
@@ -201,7 +201,7 @@ graph TB
 
     subgraph "CloudFlare Workers - Remote MCP Server"
         Worker[Worker Entry Point]
-        OAuth[OAuth 2.0 + PKCE Service]
+        OAuth[OAuth 2.0 Service]
         UserMgmt[User Service<br/>Multi-tenant Isolation]
         MCPServer[MCP Protocol Handler<br/>HTTP Streamable]
         Tools[Tool Layer<br/>72 Tools - 12 Categories]
@@ -244,7 +244,7 @@ graph TB
 ```
 
 **Architecture Highlights:**
-- **OAuth 2.0 + PKCE**: Secure authorization without exposing API keys
+- **OAuth 2.0**: Secure authorization without exposing API keys
 - **JWT Sessions**: Stateless authentication with 24-hour tokens
 - **AES-256-GCM Encryption**: All API keys encrypted at rest in CloudFlare KV
 - **Multi-Tenancy**: Complete user isolation with per-user rate limiting
@@ -427,7 +427,7 @@ GET  /metrics          - Usage statistics
 ## 📈 Roadmap
 
 ### Current (v1.0)
-- ✅ OAuth 2.0 + PKCE authentication with ClickUp
+- ✅ OAuth 2.0 authentication with ClickUp
 - ✅ 72 tools across 12 categories
 - ✅ Free and Premium tiers
 - ✅ Enterprise security features
@@ -448,7 +448,7 @@ GET  /metrics          - Usage statistics
 - **Enterprise**: Custom pricing - Team features, SSO, dedicated support
 
 All plans include:
-- ✅ Secure OAuth 2.0 + PKCE authentication
+- ✅ Secure OAuth 2.0 authentication
 - ✅ Encrypted data storage
 - ✅ Global CloudFlare infrastructure
 - ✅ 99.9% uptime SLA
