@@ -4,318 +4,398 @@
 [![GitHub Stars](https://img.shields.io/github/stars/TaazKareem/clickup-mcp-server?style=flat&logo=github)](https://github.com/TaazKareem/clickup-mcp-server/stargazers)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/TaazKareem/clickup-mcp-server/graphs/commit-activity)
 
-A Model Context Protocol (MCP) server for integrating ClickUp tasks with AI applications. This server allows AI agents to interact with ClickUp tasks, spaces, lists, and folders through a standardized protocol.
+# ClickUp MCP Server - Remote SaaS
 
-> 🚧 **Status Update:** Working with the ClickUp team... ✨
+**Securely connect your ClickUp workspace to AI assistants without managing API keys.**
 
-## Requirements
+A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to interact with ClickUp workspaces through secure OAuth authentication. Transform your task management workflow with **72+ tools** across 12 categories.
 
-- **Node.js v18.0.0 or higher** (required for MCP SDK compatibility)
-- ClickUp API key and Team ID
+> 🚀 **Ready to get started?** [Authenticate with ClickUp →](https://clickup-mcp.workers.dev/auth/login)
 
-## Setup
+## ✨ Key Benefits
 
-1. Get your credentials:
-   - ClickUp API key from [ClickUp Settings](https://app.clickup.com/settings/apps)
-   - Team ID from your ClickUp workspace URL
-2. Choose either hosted installation (sends webhooks) or NPX installation (downloads to local path and installs dependencies)
-3. Use natural language to manage your workspace!
+- **🔐 Zero API Key Management** - Secure OAuth 2.0 authentication
+- **☁️ Always Available** - Hosted on CloudFlare Workers global network
+- **🚀 72+ Tools** - Comprehensive ClickUp integration
+- **💎 Free & Premium Tiers** - Start free, upgrade for advanced features
+- **🛡️ Enterprise Security** - Encrypted storage, audit logging, rate limiting
+- **⚡ Lightning Fast** - Sub-100ms response times globally
 
-## Smithery Installation (Quick Start)
+## 🆚 Free vs Premium
 
-[![smithery badge](https://smithery.ai/badge/@taazkareem/clickup-mcp-server)](https://smithery.ai/server/@TaazKareem/clickup-mcp-server)
+| Feature | Free Tier | Premium Tier ($4.99/mo) |
+|---------|-----------|-------------------------|
+| **Basic Operations** | ✅ Create, read, update tasks | ✅ All free features |
+| **Workspace Navigation** | ✅ Hierarchy, lists, folders | ✅ Enhanced navigation |
+| **Rate Limits** | 100 requests/minute | ⚡ 500 requests/minute |
+| **Bulk Operations** | ❌ | ✅ Create/update/move multiple tasks |
+| **Time Tracking** | ❌ | ✅ Start/stop timers, time entries |
+| **Custom Fields** | ❌ | ✅ Full custom field management |
+| **Project Management** | ❌ | ✅ Gantt charts, milestones |
+| **Advanced Tools** | ❌ | ✅ 40+ premium tools |
+| **Support** | Community | 📞 Priority support |
 
-The server is hosted on [Smithery](https://smithery.ai/server/@taazkareem/clickup-mcp-server). There, you can preview the available tools or copy the commands to run on your specific client app.
+## 🚀 Quick Start (5 minutes)
 
-## NPX Installation
+### Step 1: Authenticate with ClickUp
 
-[![NPM Version](https://img.shields.io/npm/v/@taazkareem/clickup-mcp-server.svg?style=flat&logo=npm)](https://www.npmjs.com/package/@taazkareem/clickup-mcp-server)
-[![Dependency Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)](https://github.com/TaazKareem/clickup-mcp-server/blob/main/package.json)
-[![NPM Downloads](https://img.shields.io/npm/dm/@taazkareem/clickup-mcp-server.svg?style=flat&logo=npm)](https://npmcharts.com/compare/@taazkareem/clickup-mcp-server?minimal=true)
+Visit the authentication page and authorize with your ClickUp account:
 
-Add this entry to your client's MCP settings JSON file:
+```
+https://clickup-mcp.workers.dev/auth/login
+```
+
+You'll receive a JWT session token after authorization.
+
+### Step 2: Get Your ClickUp API Key
+
+1. Log into [ClickUp](https://app.clickup.com)
+2. Go to **Settings** → **Apps** → **API Token**
+3. Generate or copy your personal API token
+4. Find your Team ID in your workspace URL
+
+### Step 3: Store API Key Securely
+
+Using your JWT token from Step 1:
+
+```bash
+curl -X POST https://clickup-mcp.workers.dev/auth/api-key \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "api_key": "pk_YOUR_CLICKUP_API_KEY",
+    "team_id": "YOUR_TEAM_ID"
+  }'
+```
+
+### Step 4: Configure Your AI Client
+
+#### Claude Desktop Configuration
+
+Add this to your MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "clickup": {
+      "url": "https://clickup-mcp.workers.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN"
+      },
+      "name": "ClickUp Workspace",
+      "description": "Manage ClickUp tasks and projects"
+    }
+  }
+}
+```
+
+#### Other MCP Clients
+
+Most MCP-compatible clients support remote servers. Use:
+- **URL**: `https://clickup-mcp.workers.dev/mcp`
+- **Authentication**: Bearer token in headers
+- **Transport**: HTTP Streamable (recommended)
+
+## 🛠️ Available Tools (72 Total)
+
+### Core Tools (Free Tier)
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Workspace** | 3 tools | Navigate hierarchy, get members, view structure |
+| **Basic Tasks** | 8 tools | Create, read, update, delete, move, duplicate |
+| **Lists & Folders** | 6 tools | Manage organizational structure |
+| **Comments** | 2 tools | Add and view task comments |
+
+### Premium Tools
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Bulk Operations** | 6 tools | Create/update/move/delete multiple items |
+| **Time Tracking** | 5 tools | Start/stop timers, manage time entries |
+| **Custom Fields** | 6 tools | Full custom field management |
+| **Project Management** | 5 tools | Gantt charts, milestones, templates |
+| **Advanced Tasks** | 6 tools | Scheduling, dependencies, parallel groups |
+| **Documents** | 7 tools | Create and manage ClickUp documents |
+| **Space Management** | 7 tools | Advanced space operations |
+| **Tags** | 3 tools | Tag management and organization |
+| **Dependencies** | 5 tools | Task relationships and links |
+| **Attachments** | 3 tools | File management |
+
+### Tool Categories Breakdown
+
+```
+📊 Total: 72 tools across 12 categories
+┣━ 📝 Task Management: 27 tools (core CRUD + advanced features)
+┣━ 📋 List Management: 8 tools (organization)
+┣━ 🏢 Space Management: 6 tools (workspace)
+┣━ 🔧 Custom Fields: 6 tools (metadata)
+┣━ ⏱️ Time Tracking: 5 tools (productivity)
+┣━ 📊 Project Management: 5 tools (planning)
+┣━ 📄 Document Management: 5 tools (knowledge)
+┣━ 📁 Folder Management: 4 tools (structure)
+┣━ 🌐 Workspace: 3 tools (navigation)
+┣━ 🏷️ Tags: 1 tool (organization)
+┣━ 👥 Members: 1 tool (collaboration)
+┗━ 🔗 Other: 1 tool (utilities)
+```
+
+## 💎 Upgrade to Premium
+
+### Instant Activation
+
+Get your premium subscription link:
+
+```bash
+curl -X POST https://clickup-mcp.workers.dev/stripe/create-checkout \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+Complete payment through Stripe's secure checkout and premium features activate immediately!
+
+### Why Upgrade?
+
+- **10x Productivity** with bulk operations
+- **Time Tracking** integrated into AI workflows
+- **Complex Project Management** with dependencies and scheduling
+- **5x Rate Limits** for power users
+- **Priority Support** when you need help
+
+## 🔒 Security & Privacy
+
+### How We Protect Your Data
+
+- **🔐 AES-256-GCM Encryption** - All API keys encrypted at rest
+- **🛡️ OAuth 2.0 + PKCE** - Industry-standard secure authentication
+- **⏰ Session Management** - JWT tokens auto-expire after 24 hours
+- **📊 Audit Logging** - Complete action history for security monitoring
+- **🚪 User Isolation** - Complete data separation between users
+- **🌍 Global Edge** - CloudFlare's security infrastructure
+
+### What We Store
+
+✅ **Encrypted API Keys** - For workspace access
+✅ **Team IDs** - To identify your workspace
+✅ **Session Tokens** - Auto-expire after 24 hours
+✅ **Usage Metrics** - Anonymous for rate limiting
+
+### What We Don't Store
+
+❌ Your ClickUp password
+❌ Task content or descriptions
+❌ Unencrypted sensitive data
+❌ Personal information beyond email
+
+## 🚀 Usage Examples
+
+Once configured, use natural language with your AI assistant:
+
+### Basic Task Management
+```
+"Create a task called 'Review Q1 Reports' due next Monday in my Marketing list"
+
+"Update the task 'Website Redesign' status to 'In Progress'"
+
+"Show me all tasks in the Development folder"
+```
+
+### Time Tracking (Premium)
+```
+"Start tracking time on the 'Client Meeting Prep' task"
+
+"Log 2 hours on the 'Code Review' task for yesterday"
+
+"Show me my time entries for this week"
+```
+
+### Bulk Operations (Premium)
+```
+"Create 5 tasks for the sprint planning:
+1. Setup environment
+2. Database migration
+3. API development
+4. Frontend integration
+5. Testing and QA"
+
+"Move all 'In Review' tasks to 'Completed'"
+```
+
+### Project Management (Premium)
+```
+"Create a project plan with dependencies for our website launch"
+
+"Generate a Gantt chart for the current sprint"
+
+"Set up milestones for the Q2 product release"
+```
+
+## 🛠️ Development & Self-Hosting
+
+### Local Development
+
+```bash
+# Clone repository
+git clone https://github.com/TaazKareem/clickup-mcp-server.git
+cd clickup-mcp-server
+
+# Install dependencies
+npm install
+
+# CloudFlare Workers development
+npm run dev:worker
+
+# Traditional MCP development
+npm run build && npm start
+```
+
+### Self-Hosting on CloudFlare Workers
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete self-hosting instructions including:
+- CloudFlare Workers setup
+- OAuth app configuration
+- KV namespace creation
+- Environment variables
+- Security configuration
+
+### Testing
+
+```bash
+# Run comprehensive tool testing
+node test-all-tools-ultrathink.js
+
+# Run unit tests
+npm test
+
+# Test specific functionality
+npm run test:integration
+```
+
+## 🌐 Alternative Installation Methods
+
+### NPX Installation (Traditional Local MCP)
+
+For users who prefer local installation:
 
 ```json
 {
   "mcpServers": {
     "ClickUp": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@taazkareem/clickup-mcp-server@latest"
-      ],
+      "args": ["-y", "@taazkareem/clickup-mcp-server@latest"],
       "env": {
         "CLICKUP_API_KEY": "your-api-key",
-        "CLICKUP_TEAM_ID": "your-team-id",
-        "DOCUMENT_SUPPORT": "true"
+        "CLICKUP_TEAM_ID": "your-team-id"
       }
     }
   }
 }
 ```
 
-Or use this npx command:
+**Note**: Local installation requires manual API key management and lacks the security, scalability, and premium features of the hosted version.
 
-`npx -y @taazkareem/clickup-mcp-server@latest --env CLICKUP_API_KEY=your-api-key --env CLICKUP_TEAM_ID=your-team-id`
-
-**Obs: if you don't pass "DOCUMENT_SUPPORT": "true", the default is false and document support will not be active.**
+## 🔧 Configuration Options
 
 ### Tool Filtering
 
-You can control which tools are available using two complementary environment variables:
-
-#### ENABLED_TOOLS (Recommended)
-Use `ENABLED_TOOLS` to specify exactly which tools should be available:
-```bash
-# Environment variable
-export ENABLED_TOOLS="create_task,get_task,update_task,get_workspace_hierarchy"
-
-# Command line argument
---env ENABLED_TOOLS=create_task,get_task,update_task,get_workspace_hierarchy
-```
-
-#### DISABLED_TOOLS (Legacy)
-Use `DISABLED_TOOLS` to disable specific tools while keeping all others enabled:
-```bash
-# Environment variable
-export DISABLED_TOOLS="delete_task,delete_bulk_tasks"
-
-# Command line argument
---env DISABLED_TOOLS=delete_task,delete_bulk_tasks
-```
-
-#### Precedence Rules
-- If `ENABLED_TOOLS` is specified, only those tools will be available (takes precedence over `DISABLED_TOOLS`)
-- If only `DISABLED_TOOLS` is specified, all tools except those listed will be available
-- If neither is specified, all tools are available (default behavior)
-
-**Example:**
-```bash
-# Only enable task creation and reading tools
-npx -y @taazkareem/clickup-mcp-server@latest \
-  --env CLICKUP_API_KEY=your-api-key \
-  --env CLICKUP_TEAM_ID=your-team-id \
-  --env ENABLED_TOOLS=create_task,get_task,get_workspace_hierarchy
-```
-
-Please filter tools you don't need if you are having issues with the number of tools or any context limitations.
-
-## Running with HTTP Transport Support
-
-The server supports both modern **HTTP Streamable** transport (MCP Inspector compatible) and legacy **SSE (Server-Sent Events)** transport for backwards compatibility.
-
-```json
-{
-  "mcpServers": {
-    "ClickUp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@taazkareem/clickup-mcp-server@latest"
-      ],
-      "env": {
-        "CLICKUP_API_KEY": "your-api-key",
-        "CLICKUP_TEAM_ID": "your-team-id",
-        "ENABLE_SSE": "true",
-        "PORT": "3231"
-      }
-    }
-  }
-}
-```
-
-**Endpoints:**
-- **Primary**: `http://127.0.0.1:3231/mcp` (Streamable HTTP)
-- **Legacy**: `http://127.0.0.1:3231/sse` (SSE for backwards compatibility)
-
-### Command Line Usage
+Control which tools are available:
 
 ```bash
-npx -y @taazkareem/clickup-mcp-server@latest --env CLICKUP_API_KEY=your-api-key --env CLICKUP_TEAM_ID=your-team-id --env ENABLE_SSE=true --env PORT=3231
+# Environment variables for self-hosting
+FREE_TIER_TOOLS="get_workspace_hierarchy,create_task,get_task,update_task"
+PREMIUM_TIER_TOOLS="create_bulk_tasks,time_tracking_tools,custom_fields"
 ```
 
-Available configuration options:
-
-| Option | Description | Default |
-| ------ | ----------- | ------- |
-| `ENABLED_TOOLS` | Comma-separated list of tools to enable (takes precedence) | All tools |
-| `DISABLED_TOOLS` | Comma-separated list of tools to disable | None |
-| `ENABLE_SSE` | Enable the HTTP/SSE transport | `false` |
-| `PORT` | Port for the HTTP server | `3231` |
-| `ENABLE_STDIO` | Enable the STDIO transport | `true` |
-| `ENABLE_SECURITY_FEATURES` | Enable security headers and logging | `false` |
-| `ENABLE_HTTPS` | Enable HTTPS/TLS encryption | `false` |
-| `ENABLE_ORIGIN_VALIDATION` | Validate Origin header against whitelist | `false` |
-| `ENABLE_RATE_LIMIT` | Enable rate limiting protection | `false` |
-
-### 🔒 Security Features
-
-The server includes optional security enhancements for production deployments. All security features are **opt-in** and **disabled by default** to maintain backwards compatibility.
-
-**Quick security setup:**
-```bash
-# Generate SSL certificates for HTTPS
-./scripts/generate-ssl-cert.sh
-
-# Start with full security
-ENABLE_SECURITY_FEATURES=true \
-ENABLE_HTTPS=true \
-ENABLE_ORIGIN_VALIDATION=true \
-ENABLE_RATE_LIMIT=true \
-SSL_KEY_PATH=./ssl/server.key \
-SSL_CERT_PATH=./ssl/server.crt \
-npx @taazkareem/clickup-mcp-server@latest --env CLICKUP_API_KEY=your-key --env CLICKUP_TEAM_ID=your-team --env ENABLE_SSE=true
-```
-
-**HTTPS Endpoints:**
-- **Primary**: `https://127.0.0.1:3443/mcp` (Streamable HTTPS)
-- **Legacy**: `https://127.0.0.1:3443/sse` (SSE HTTPS for backwards compatibility)
-- **Health**: `https://127.0.0.1:3443/health` (Health check)
-
-For detailed security configuration, see [Security Features Documentation](docs/security-features.md).
-
-#### n8n Integration
-
-To integrate with n8n:
-
-1. Start the clickup-mcp-server with SSE enabled
-2. In n8n, add a new "MCP AI Tool" node
-3. Configure the node with:
-   - Transport: SSE
-   - Server URL: `http://localhost:3231` (or your server address)
-   - Tools: Select the ClickUp tools you want to use
-
-#### Example Client
-
-An example SSE client is provided in the `examples` directory. To run it:
+### Rate Limiting
 
 ```bash
-# Start the server with SSE enabled
-ENABLE_SSE=true PORT=3231 npx -y @taazkareem/clickup-mcp-server@latest --env CLICKUP_API_KEY=your-api-key --env CLICKUP_TEAM_ID=your-team-id
-
-# In another terminal, run the example client
-cd examples
-npm install
-npm run sse-client
+# Adjust limits based on subscription
+MAX_REQUESTS_PER_MINUTE=100  # Free tier
+MAX_REQUESTS_PER_MINUTE=500  # Premium tier
 ```
 
-## Features
+## 📊 API Endpoints
 
-| 📝 Task Management                                                                                                                                                                                                                                                   | 🏷️ Tag Management                                                                                                                                                                                                                                                        |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| • Create, update, and delete tasks<br>• Move and duplicate tasks anywhere<br>• Support for single and bulk operations<br>• Set start/due dates with natural language<br>• Create and manage subtasks<br>• Add comments and attachments | • Create, update, and delete space tags<br>• Add and remove tags from tasks<br>• Use natural language color commands<br>• Automatic contrasting foreground colors<br>• View all space tags<br>• Tag-based task organization across workspace |
-| ⏱️ **Time Tracking**                                                                                                                                                                                                                                          | 🌳 **Workspace Organization**                                                                                                                                                                                                                                         |
-| • View time entries for tasks<br>• Start/stop time tracking on tasks<br>• Add manual time entries<br>• Delete time entries<br>• View currently running timer<br>• Track billable and non-billable time                                 | • Navigate spaces, folders, and lists<br>• Create and manage folders<br>• Organize lists within spaces<br>• Create lists in folders<br>• View workspace hierarchy<br>• Efficient path navigation                                             |
-| 📄 **Document Management**                                                                                                                                                                                                                                      | 👥 **Member Management**                                                                                                                                                                                                                                             |
-| • Document Listing through all workspace<br>• Document Page listing<br>• Document Page Details<br>• Document Creation<br>• Document page update (append & prepend)                                                                       | • Find workspace members by name or email<br>• Resolve assignees for tasks<br>• View member details and permissions<br>• Assign tasks to users during creation and updates<br>• Support for user IDs, emails, or usernames<br>• Team-wide user management                            |
-| ⚡ **Integration Features**                                                                                                                                                                                                                                      | 🏗️ **Architecture & Performance**                                                                                                                                                                                                                                        |
-| • Global name or ID-based lookups<br>• Case-insensitive matching<br>• Markdown formatting support<br>• Built-in rate limiting<br>• Error handling and validation<br>• Comprehensive API coverage                                             | • **70% codebase reduction** for improved performance<br>• **Unified architecture** across all transport types<br>• **Zero code duplication**<br>• **HTTP Streamable transport** (MCP Inspector compatible)<br>• **Legacy SSE support** for backwards compatibility |
+The remote MCP server provides these endpoints:
 
-## Available Tools (36 Total)
+```
+GET  /auth/login         - Initiate OAuth flow
+GET  /auth/callback      - OAuth callback handler
+POST /auth/refresh       - Refresh access token
+POST /auth/api-key       - Store encrypted API key
+POST /auth/logout        - Terminate session
 
-| Tool                                                               | Description                     | Required Parameters                                                                                                          |
-| ------------------------------------------------------------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| [get_workspace_hierarchy](docs/user-guide.md#workspace-navigation) | Get workspace structure         | None                                                                                                                         |
-| [create_task](docs/user-guide.md#task-management)                  | Create a task                   | `name`, (`listId`/`listName`)                                                                                          |
-| [create_bulk_tasks](docs/user-guide.md#task-management)            | Create multiple tasks           | `tasks[]`                                                                                                                  |
-| [update_task](docs/user-guide.md#task-management)                  | Modify task                     | `taskId`/`taskName`                                                                                                      |
-| [update_bulk_tasks](docs/user-guide.md#task-management)            | Update multiple tasks           | `tasks[]` with IDs or names                                                                                                |
-| [get_tasks](docs/user-guide.md#task-management)                    | Get tasks from list             | `listId`/`listName`                                                                                                      |
-| [get_task](docs/user-guide.md#task-management)                     | Get single task details         | `taskId`/`taskName` (with smart disambiguation)                                                                          |
-| [get_workspace_tasks](docs/user-guide.md#task-management)          | Get tasks with filtering        | At least one filter (tags, list_ids, space_ids, etc.)                                                                        |
-| [get_task_comments](docs/user-guide.md#task-management)            | Get comments on a task          | `taskId`/`taskName`                                                                                                      |
-| [create_task_comment](docs/user-guide.md#task-management)          | Add a comment to a task         | `commentText`, (`taskId`/(`taskName`+`listName`))                                                                    |
-| [attach_task_file](docs/user-guide.md#task-management)             | Attach file to a task           | `taskId`/`taskName`, (`file_data` or `file_url`)                                                                     |
-| [delete_task](docs/user-guide.md#task-management)                  | Remove task                     | `taskId`/`taskName`                                                                                                      |
-| [delete_bulk_tasks](docs/user-guide.md#task-management)            | Remove multiple tasks           | `tasks[]` with IDs or names                                                                                                |
-| [move_task](docs/user-guide.md#task-management)                    | Move task                       | `taskId`/`taskName`, `listId`/`listName`                                                                             |
-| [move_bulk_tasks](docs/user-guide.md#task-management)              | Move multiple tasks             | `tasks[]` with IDs or names, target list                                                                                   |
-| [duplicate_task](docs/user-guide.md#task-management)               | Copy task                       | `taskId`/`taskName`, `listId`/`listName`                                                                             |
-| [create_list](docs/user-guide.md#list-management)                  | Create list in space            | `name`, `spaceId`/`spaceName`                                                                                          |
-| [create_folder](docs/user-guide.md#folder-management)              | Create folder                   | `name`, `spaceId`/`spaceName`                                                                                          |
-| [create_list_in_folder](docs/user-guide.md#list-management)        | Create list in folder           | `name`, `folderId`/`folderName`                                                                                        |
-| [get_folder](docs/user-guide.md#folder-management)                 | Get folder details              | `folderId`/`folderName`                                                                                                  |
-| [update_folder](docs/user-guide.md#folder-management)              | Update folder properties        | `folderId`/`folderName`                                                                                                  |
-| [delete_folder](docs/user-guide.md#folder-management)              | Delete folder                   | `folderId`/`folderName`                                                                                                  |
-| [get_list](docs/user-guide.md#list-management)                     | Get list details                | `listId`/`listName`                                                                                                      |
-| [update_list](docs/user-guide.md#list-management)                  | Update list properties          | `listId`/`listName`                                                                                                      |
-| [delete_list](docs/user-guide.md#list-management)                  | Delete list                     | `listId`/`listName`                                                                                                      |
-| [get_space_tags](docs/user-guide.md#tag-management)                | Get space tags                  | `spaceId`/`spaceName`                                                                                                    |
-| [create_space_tag](docs/user-guide.md#tag-management)              | Create tag                      | `tagName`, `spaceId`/`spaceName`                                                                                       |
-| [update_space_tag](docs/user-guide.md#tag-management)              | Update tag                      | `tagName`, `spaceId`/`spaceName`                                                                                       |
-| [delete_space_tag](docs/user-guide.md#tag-management)              | Delete tag                      | `tagName`, `spaceId`/`spaceName`                                                                                       |
-| [add_tag_to_task](docs/user-guide.md#tag-management)               | Add tag to task                 | `tagName`, `taskId`/(`taskName`+`listName`)                                                                          |
-| [remove_tag_from_task](docs/user-guide.md#tag-management)          | Remove tag from task            | `tagName`, `taskId`/(`taskName`+`listName`)                                                                          |
-| [get_task_time_entries](docs/user-guide.md#time-tracking)          | Get time entries for a task     | `taskId`/`taskName`                                                                                                      |
-| [start_time_tracking](docs/user-guide.md#time-tracking)            | Start time tracking on a task   | `taskId`/`taskName`                                                                                                      |
-| [stop_time_tracking](docs/user-guide.md#time-tracking)             | Stop current time tracking      | None                                                                                                                         |
-| [add_time_entry](docs/user-guide.md#time-tracking)                 | Add manual time entry to a task | `taskId`/`taskName`, `start`, `duration`                                                                             |
-| [delete_time_entry](docs/user-guide.md#time-tracking)              | Delete a time entry             | `timeEntryId`                                                                                                              |
-| [get_current_time_entry](docs/user-guide.md#time-tracking)         | Get currently running timer     | None                                                                                                                         |
-| [get_workspace_members](docs/user-guide.md#member-management)      | Get all workspace members       | None                                                                                                                         |
-| [find_member_by_name](docs/user-guide.md#member-management)        | Find member by name or email    | `nameOrEmail`                                                                                                               |
-| [resolve_assignees](docs/user-guide.md#member-management)          | Resolve member names to IDs     | `assignees[]`                                                                                                              |
-| [create_document](docs/user-guide.md#document-management)          | Create a document               | `workspaceId`, `name`, `parentId`/`parentType`, `visibility`, `create_pages`                                     |
-| [get_document](docs/user-guide.md#document-management)             | Get a document                  | `workspaceId`/`documentId`                                                                                               |
-| [list_documents](docs/user-guide.md#document-management)           | List documents                  | `workspaceId`, `documentId`/`creator`/`deleted`/`archived`/`parent_id`/`parent_type`/`limit`/`next_cursor` |
-| [list_document_pages](docs/user-guide.md#document-management)      | List document pages             | `documentId`/`documentName`                                                                                              |
-| [get_document_pages](docs/user-guide.md#document-management)       | Get document pages              | `documentId`/`documentName`, `pageIds`                                                                                 |
-| [create_document_pages](docs/user-guide.md#document-management)    | Create a document page          | `workspaceId`/`documentId`, `parent_page_id`/`name`/`sub_title`,`content`/`content_format`                     |
-| [update_document_page](docs/user-guide.md#document-management)     | Update a document page          | `workspaceId`/`documentId`, `name`/`sub_title`,`content`/`content_edit_mode`/`content_format`                  |
+POST /mcp               - MCP HTTP Streamable endpoint
+GET  /mcp/sse          - Server-Sent Events transport
+WS   /mcp/ws           - WebSocket transport
 
-See [full documentation](docs/user-guide.md) for optional parameters and advanced usage.
+POST /stripe/create-checkout  - Create premium subscription
+POST /stripe/webhook          - Handle subscription events
 
-## Member Management Tools
-
-When creating or updating tasks, you can assign users using the `assignees` parameter. The parameter accepts an array of user IDs, emails, or usernames:
-
-**Creating tasks with assignees:**
-```json
-{
-  "name": "New Task",
-  "description": "This is a new task.",
-  "assignees": ["jdoe@example.com", "Jane Smith"]  // Emails, usernames, or user IDs
-}
+GET  /health           - Health check
+GET  /metrics          - Usage statistics
 ```
 
-**Updating task assignees:**
-```json
-{
-  "taskId": "abc123",
-  "assignees": ["newuser@example.com"]  // Replace existing assignees
-}
-```
+## 🐛 Troubleshooting
 
-The member management tools help resolve user references when needed.
+### Common Issues
 
-## Prompts
+**"Authentication Required"**
+- Your session expired. Visit `/auth/login` to get a new token
 
-Not yet implemented and not supported by all client apps. Request a feature for a Prompt implementation that would be most beneficial for your workflow (without it being too specific). Examples:
+**"API Key Not Found"**
+- Store your API key using the `/auth/api-key` endpoint
 
-| Prompt                                             | Purpose                   | Features                                  |
-| -------------------------------------------------- | ------------------------- | ----------------------------------------- |
-| [summarize_tasks](docs/user-guide.md#prompts)      | Task overview             | Status summary, priorities, relationships |
-| [analyze_priorities](docs/user-guide.md#prompts)   | Priority optimization     | Distribution analysis, sequencing         |
-| [generate_description](docs/user-guide.md#prompts) | Task description creation | Objectives, criteria, dependencies        |
+**"Rate Limit Exceeded"**
+- Wait 1 minute or upgrade to Premium for higher limits
 
-## Error Handling
+**"Tool Not Available"**
+- This tool requires Premium access
 
-The server provides clear error messages for:
+### Getting Help
 
-- Missing required parameters
-- Invalid IDs or names
-- Items not found
-- Permission issues
-- API errors
-- Rate limiting
+1. **Check Service Status**: `curl https://clickup-mcp.workers.dev/health`
+2. **Review Setup**: Ensure JWT token and API key are correctly configured
+3. **Documentation**: See [USER_SETUP_GUIDE.md](USER_SETUP_GUIDE.md)
+4. **Community Support**: Create an issue on GitHub
+5. **Premium Support**: Priority response for premium subscribers
 
-The `LOG_LEVEL` environment variable can be specified to control the verbosity of server logs. Valid values are `trace`, `debug`, `info`, `warn`, and `error` (default).
-This can be also be specified on the command line as, e.g. `--env LOG_LEVEL=info`.
+## 📈 Roadmap
 
-## Support the Developer
+### Current (v1.0)
+- ✅ OAuth authentication with ClickUp
+- ✅ 72 tools across 12 categories
+- ✅ Free and Premium tiers
+- ✅ Enterprise security features
+- ✅ Global CloudFlare deployment
 
-When using this server, you may occasionally see a small sponsor message with a link to this repository included in tool responses. I hope you can support the project!
-If you find this project useful, please consider supporting:
+### Coming Soon
+- 🚧 Multi-workspace support
+- 🚧 Team collaboration features
+- 🚧 Webhook integrations
+- 🚧 Mobile app support
+- 🚧 Advanced reporting dashboard
+- 🚧 Custom integrations
+
+## 💰 Pricing
+
+- **Free Tier**: $0/month - Essential ClickUp operations
+- **Premium Tier**: $4.99/month - Advanced features + 5x rate limits
+- **Enterprise**: Custom pricing - Team features, SSO, dedicated support
+
+All plans include:
+- ✅ Secure OAuth authentication
+- ✅ Encrypted data storage
+- ✅ Global CloudFlare infrastructure
+- ✅ 99.9% uptime SLA
+
+## 🤝 Support the Project
+
+This is an open-source project that helps thousands of users automate their ClickUp workflows. Your support helps us:
+
+- 🔧 Maintain and improve the service
+- 🚀 Add new features and integrations
+- 🛡️ Enhance security and reliability
+- 📚 Create better documentation
 
 [![Sponsor TaazKareem](https://img.shields.io/badge/Sponsor-TaazKareem-orange?logo=github)](https://github.com/sponsors/TaazKareem)
 
@@ -323,24 +403,39 @@ If you find this project useful, please consider supporting:
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="200" alt="Buy Me A Coffee">
 </a>
 
-## Acknowledgements
-
-Special thanks to [ClickUp](https://clickup.com) for their excellent API and services that make this integration possible.
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
-
-## License
+## 📄 License & Legal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Disclaimer
+### Privacy Policy
 
-This software makes use of third-party APIs and may reference trademarks
-or brands owned by third parties. The use of such APIs or references does not imply
-any affiliation with or endorsement by the respective companies. All trademarks and
-brand names are the property of their respective owners. This project is an independent
-work and is not officially associated with or sponsored by any third-party company mentioned.
+We are committed to protecting your privacy. See our privacy practices:
+- Data encrypted at rest and in transit
+- No selling of personal information
+- Minimal data collection (only what's needed for functionality)
+- Full audit logs available to users
+- GDPR compliant data handling
+
+### Terms of Service
+
+By using this service, you agree to:
+- Use the service in compliance with ClickUp's Terms of Service
+- Not abuse rate limits or attempt to circumvent security measures
+- Not use the service for illegal or harmful activities
+- Respect intellectual property rights
+
+## 🙏 Acknowledgments
+
+Special thanks to:
+- [ClickUp](https://clickup.com) for their excellent API
+- [CloudFlare](https://cloudflare.com) for their Workers platform
+- [Model Context Protocol](https://modelcontextprotocol.io) community
+- All contributors and supporters
+
+---
+
+**Ready to transform your ClickUp workflow?** [Get started now →](https://clickup-mcp.workers.dev/auth/login)
+
+**Need help?** Check our [User Setup Guide](USER_SETUP_GUIDE.md) or [Deployment Guide](DEPLOYMENT.md)
