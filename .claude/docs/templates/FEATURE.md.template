@@ -1,0 +1,446 @@
+---
+title: [Feature Name]
+description: [One-line description of the feature, 150 chars max]
+keywords: [feature, keywords, relevant, terms]
+category: feature
+ai_tags: [feature-type, technology, use-case]
+last_updated: [YYYY-MM-DD]
+---
+
+# [Feature Name]
+
+<!-- AI-OPTIMIZATION: Clear feature description for embeddings -->
+
+## Overview
+
+[Brief description of the feature and its value proposition. Explain what problem it solves and why users need it.]
+
+**Key Benefits:**
+- [Primary benefit]
+- [Secondary benefit]
+- [Additional benefit]
+
+**Use Cases:**
+- [Primary use case]
+- [Secondary use case]
+- [Additional use case]
+
+## Quick Start
+
+### Prerequisites
+- [Requirement 1]
+- [Requirement 2]
+- [Requirement 3]
+
+### 5-Minute Setup
+
+**Step 1: [Action]**
+```bash
+# Command or code example
+```
+
+**Step 2: [Action]**
+```bash
+# Command or code example
+```
+
+**Step 3: [Verification]**
+```bash
+# Verification command
+```
+
+✅ You should see: [Expected output]
+
+## How It Works
+
+### Architecture Overview
+
+```mermaid
+graph TD
+    A[Component A] --> B[Component B]
+    B --> C[Component C]
+    C --> D[Output]
+
+    style A fill:#e1f5ff
+    style B fill:#fff9e1
+    style C fill:#ffe1f5
+    style D fill:#e1ffe1
+```
+
+[Explanation of the architecture diagram and data flow]
+
+### Technical Details
+
+[In-depth explanation of how the feature works internally]
+
+**Key Components:**
+1. **[Component 1]** - [Description and responsibility]
+2. **[Component 2]** - [Description and responsibility]
+3. **[Component 3]** - [Description and responsibility]
+
+## Configuration
+
+### Environment Variables
+
+```bash
+# Required Configuration
+FEATURE_ENABLED="true"
+FEATURE_SETTING_1="value"
+FEATURE_SETTING_2="value"
+
+# Optional Configuration
+FEATURE_OPTIONAL_1="default_value"
+FEATURE_OPTIONAL_2="default_value"
+```
+
+### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `feature_enabled` | boolean | `false` | Enable/disable feature |
+| `setting_1` | string | - | [Description] |
+| `setting_2` | number | `100` | [Description] |
+| `optional_1` | string | `"default"` | [Description] |
+
+### CloudFlare Workers Configuration
+
+```bash
+# Set configuration via Wrangler
+wrangler secret put FEATURE_SETTING_1
+wrangler secret put FEATURE_SETTING_2
+
+# Or in wrangler.toml
+[env.production.vars]
+FEATURE_ENABLED = "true"
+FEATURE_SETTING_1 = "production_value"
+```
+
+## Usage Examples
+
+### Basic Usage
+
+```typescript
+// Example 1: Basic feature usage
+import { FeatureName } from './feature';
+
+const feature = new FeatureName({
+  setting1: 'value',
+  setting2: 100
+});
+
+const result = await feature.execute();
+console.log(result);
+```
+
+**Output:**
+```json
+{
+  "success": true,
+  "data": {
+    "result": "expected_output"
+  }
+}
+```
+
+### Advanced Usage
+
+```typescript
+// Example 2: Advanced feature with options
+const feature = new FeatureName({
+  setting1: 'value',
+  setting2: 100,
+  advanced: {
+    option1: true,
+    option2: 'custom'
+  }
+});
+
+const result = await feature.execute({
+  parameter1: 'value',
+  parameter2: 'value'
+});
+```
+
+### Error Handling
+
+```typescript
+// Example 3: Proper error handling
+try {
+  const result = await feature.execute();
+  console.log('Success:', result);
+} catch (error) {
+  if (error.code === 'FEATURE_ERROR_1') {
+    console.error('Known error:', error.message);
+    // Handle specific error
+  } else {
+    console.error('Unexpected error:', error);
+    // Handle unexpected error
+  }
+}
+```
+
+## API Reference
+
+### Methods
+
+#### `execute(options)`
+
+[Description of the method]
+
+**Parameters:**
+- `options` (object, optional) - Configuration options
+  - `parameter1` (string, required) - [Description]
+  - `parameter2` (number, optional) - [Description] (default: `100`)
+
+**Returns:** `Promise<Result>`
+
+**Example:**
+```typescript
+const result = await feature.execute({
+  parameter1: 'value',
+  parameter2: 200
+});
+```
+
+#### `configure(config)`
+
+[Description of the method]
+
+**Parameters:**
+- `config` (object, required) - Configuration object
+  - `setting1` (string, required) - [Description]
+  - `setting2` (boolean, optional) - [Description]
+
+**Returns:** `void`
+
+**Example:**
+```typescript
+feature.configure({
+  setting1: 'new_value',
+  setting2: true
+});
+```
+
+## Integration with MCP Tools
+
+### Available Tools
+
+The following MCP tools support this feature:
+
+| Tool Name | Description | Tier |
+|-----------|-------------|------|
+| `clickup_feature_action1` | [Description] | Free |
+| `clickup_feature_action2` | [Description] | Premium |
+| `clickup_feature_action3` | [Description] | Premium |
+
+### Tool Usage Examples
+
+```typescript
+// Using MCP tool for feature
+const response = await mcpClient.call({
+  method: 'tools/call',
+  params: {
+    name: 'clickup_feature_action1',
+    arguments: {
+      param1: 'value',
+      param2: 'value'
+    }
+  }
+});
+```
+
+## Tier Availability
+
+### Free Tier
+- [Feature aspect available in free tier]
+- [Limitation 1]
+- [Limitation 2]
+
+### Premium Tier ($4.99/month)
+- All free tier features
+- [Premium feature 1]
+- [Premium feature 2]
+- [Premium feature 3]
+
+[See [Premium Features Guide](PREMIUM_FEATURES.md) for upgrade details]
+
+## Performance Considerations
+
+### Scalability
+- [Performance metric 1]: [Value]
+- [Performance metric 2]: [Value]
+- [Performance metric 3]: [Value]
+
+### Rate Limiting
+- Free tier: 100 requests/minute
+- Premium tier: 500 requests/minute
+
+### Optimization Tips
+1. **[Tip 1]:** [Detailed explanation]
+2. **[Tip 2]:** [Detailed explanation]
+3. **[Tip 3]:** [Detailed explanation]
+
+## Security
+
+### Authentication
+[How authentication is handled for this feature]
+
+### Authorization
+[Permission requirements and access control]
+
+### Data Privacy
+- [Privacy consideration 1]
+- [Privacy consideration 2]
+- [Encryption details]
+
+See [Security Guide](SECURITY.md) for comprehensive security documentation.
+
+## Error Reference
+
+### Common Errors
+
+#### `FEATURE_ERROR_1`
+**Description:** [What this error means]
+
+**Causes:**
+- [Cause 1]
+- [Cause 2]
+
+**Solutions:**
+1. [Solution 1]
+2. [Solution 2]
+
+**Example:**
+```json
+{
+  "error": {
+    "code": "FEATURE_ERROR_1",
+    "message": "Error description",
+    "details": {
+      "reason": "specific_reason"
+    }
+  }
+}
+```
+
+#### `FEATURE_ERROR_2`
+**Description:** [What this error means]
+
+**Causes:**
+- [Cause 1]
+
+**Solutions:**
+1. [Solution 1]
+
+## Troubleshooting
+
+### Issue: [Common Issue 1]
+
+**Symptoms:**
+- [Symptom 1]
+- [Symptom 2]
+
+**Diagnosis:**
+```bash
+# Check configuration
+echo $FEATURE_SETTING_1
+
+# Verify feature status
+curl https://your-worker.workers.dev/status
+```
+
+**Solutions:**
+1. **[Solution approach 1]**
+   ```bash
+   # Commands to fix
+   ```
+2. **[Solution approach 2]**
+   ```bash
+   # Commands to fix
+   ```
+
+### Issue: [Common Issue 2]
+
+[Similar structure as Issue 1]
+
+## Best Practices
+
+1. **[Practice 1 - Category]**
+   - [Specific recommendation]
+   - [Rationale]
+   - [Example]
+
+2. **[Practice 2 - Category]**
+   - [Specific recommendation]
+   - [Rationale]
+   - [Example]
+
+3. **[Practice 3 - Category]**
+   - [Specific recommendation]
+   - [Rationale]
+   - [Example]
+
+## FAQ
+
+### Q: [Common question 1]?
+**A:** [Detailed answer with examples if needed]
+
+### Q: [Common question 2]?
+**A:** [Detailed answer with examples if needed]
+
+### Q: [Common question 3]?
+**A:** [Detailed answer with examples if needed]
+
+## Monitoring & Metrics
+
+### Available Metrics
+- `feature.requests.total` - Total requests processed
+- `feature.requests.success` - Successful requests
+- `feature.requests.error` - Failed requests
+- `feature.latency.avg` - Average response time
+
+### Logging
+[Explanation of what gets logged]
+
+```json
+{
+  "level": "info",
+  "feature": "feature_name",
+  "action": "execute",
+  "user_id": "usr_123",
+  "duration_ms": 45,
+  "status": "success"
+}
+```
+
+## Migration Guide
+
+### From [Previous Version/System]
+
+[If applicable, explain how to migrate from an older system or version]
+
+**Steps:**
+1. [Migration step 1]
+2. [Migration step 2]
+3. [Migration step 3]
+
+**Backward Compatibility:**
+- [Compatibility note 1]
+- [Compatibility note 2]
+
+## Related Documentation
+
+- [Authentication Guide](AUTHENTICATION.md) - OAuth and security
+- [Tool Reference](TOOL_REFERENCE.md) - Complete tool list
+- [API Reference](API_REFERENCE.md) - MCP protocol endpoints
+- [Deployment Guide](DEPLOYMENT.md) - CloudFlare Workers setup
+
+## References
+
+- [External documentation link 1]
+- [External documentation link 2]
+- [GitHub issues or discussions]
+
+---
+*For questions or issues, see [Troubleshooting Guide](../TROUBLESHOOTING.md)*
+*Last Updated: [YYYY-MM-DD]*

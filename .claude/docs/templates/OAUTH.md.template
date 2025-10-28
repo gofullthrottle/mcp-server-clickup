@@ -1,0 +1,302 @@
+---
+title: [Authentication Feature Name]
+description: [One-line description of authentication feature, 150 chars max]
+keywords: [oauth, authentication, security, jwt, pkce]
+category: authentication
+ai_tags: [oauth2, pkce, jwt, security, authentication]
+last_updated: [YYYY-MM-DD]
+---
+
+# [Authentication Feature Name]
+
+<!-- AI-OPTIMIZATION: Clear authentication flow for embeddings -->
+
+## Overview
+
+[Brief description of the authentication feature and its purpose in the Remote MCP Server architecture.]
+
+**Key Features:**
+- OAuth 2.0 + PKCE flow for secure authentication
+- JWT session tokens with 24-hour lifetime
+- AES-256-GCM encryption for stored credentials
+- Multi-tenant user isolation
+- Automatic token refresh
+
+## Quick Start
+
+### Prerequisites
+- ClickUp account with API access
+- CloudFlare Workers environment
+- OAuth 2.0 application credentials
+
+### Basic Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Client
+    participant Worker
+    participant ClickUp
+
+    User->>Client: Initiate Login
+    Client->>Worker: GET /auth/login
+    Worker->>ClickUp: Redirect to OAuth
+    ClickUp->>User: Authorization Page
+    User->>ClickUp: Grant Permissions
+    ClickUp->>Worker: Callback with code
+    Worker->>ClickUp: Exchange code + PKCE verifier
+    ClickUp->>Worker: Access Token
+    Worker->>Worker: Encrypt & Store API Key
+    Worker->>Client: JWT Session Token
+```
+
+## Authentication Flow
+
+### Step 1: Initiate OAuth Flow
+
+[Detailed explanation of initiating the OAuth flow]
+
+```typescript
+// Example: Initiating OAuth login
+const response = await fetch('https://your-worker.workers.dev/auth/login', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+const { authUrl } = await response.json();
+// Redirect user to authUrl
+```
+
+### Step 2: Authorization Callback
+
+[Detailed explanation of handling the OAuth callback]
+
+```typescript
+// Example: Callback handling (internal - for reference)
+// Worker automatically handles this endpoint
+```
+
+### Step 3: JWT Token Usage
+
+[Detailed explanation of using JWT tokens for API requests]
+
+```typescript
+// Example: Making authenticated MCP request
+const response = await fetch('https://your-worker.workers.dev/mcp', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${jwtToken}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    method: 'tools/list'
+  })
+});
+```
+
+## Configuration
+
+### Environment Variables
+
+```bash
+# OAuth Configuration
+CLICKUP_CLIENT_ID="your_clickup_oauth_client_id"
+CLICKUP_CLIENT_SECRET="your_clickup_oauth_client_secret"
+OAUTH_REDIRECT_URI="https://your-worker.workers.dev/auth/callback"
+
+# Security
+ENCRYPTION_KEY="your_32_byte_encryption_key_base64"
+JWT_SECRET="your_jwt_signing_secret"
+JWT_EXPIRY="24h"
+
+# Optional
+ENABLE_AUDIT_LOGGING="true"
+```
+
+### OAuth Application Setup
+
+1. Create OAuth application in ClickUp:
+   - Go to ClickUp Settings → Integrations → OAuth Apps
+   - Create new OAuth App
+   - Set redirect URI: `https://your-worker.workers.dev/auth/callback`
+   - Copy Client ID and Client Secret
+
+2. Configure Worker environment:
+   ```bash
+   wrangler secret put CLICKUP_CLIENT_ID
+   wrangler secret put CLICKUP_CLIENT_SECRET
+   wrangler secret put ENCRYPTION_KEY
+   wrangler secret put JWT_SECRET
+   ```
+
+## Security Considerations
+
+### PKCE (Proof Key for Code Exchange)
+
+[Explanation of PKCE and why it's important]
+
+**Benefits:**
+- Prevents authorization code interception
+- Eliminates need for client secret in public clients
+- Recommended for all OAuth 2.0 flows
+
+### Token Security
+
+[Explanation of token security measures]
+
+**JWT Session Tokens:**
+- Signed with HS256 algorithm
+- Contains user ID and session metadata
+- Automatically expires after 24 hours
+- Cannot be revoked (by design - short lifetime)
+
+**Refresh Tokens:**
+- Stored encrypted in CloudFlare KV
+- Enables seamless token refresh
+- Can be revoked on logout
+
+### API Key Encryption
+
+[Explanation of how ClickUp API keys are encrypted]
+
+**Encryption Details:**
+- Algorithm: AES-256-GCM
+- Keys encrypted at rest in CloudFlare KV
+- Decrypted only for authenticated requests
+- Encryption key stored in Workers secrets
+
+## Error Handling
+
+### Common Errors
+
+#### OAuth Authorization Failed
+```json
+{
+  "error": {
+    "code": "oauth_failed",
+    "message": "Authorization failed",
+    "details": {
+      "reason": "user_denied"
+    }
+  }
+}
+```
+
+**Solution:** User must grant permissions in ClickUp authorization page.
+
+#### Invalid JWT Token
+```json
+{
+  "error": {
+    "code": "invalid_token",
+    "message": "JWT token is invalid or expired",
+    "details": {
+      "reason": "token_expired"
+    }
+  }
+}
+```
+
+**Solution:** Request new token via `/auth/refresh` endpoint or re-authenticate.
+
+#### Encryption Key Not Configured
+```json
+{
+  "error": {
+    "code": "config_error",
+    "message": "Encryption key not configured"
+  }
+}
+```
+
+**Solution:** Set `ENCRYPTION_KEY` in CloudFlare Workers environment.
+
+## Token Refresh
+
+### Automatic Refresh
+
+[Explanation of automatic token refresh behavior]
+
+```typescript
+// Example: Refreshing JWT token
+const response = await fetch('https://your-worker.workers.dev/auth/refresh', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${expiredJwtToken}`,
+    'Content-Type': 'application/json'
+  }
+});
+
+const { token: newJwtToken } = await response.json();
+```
+
+## Best Practices
+
+1. **Token Storage:**
+   - Store JWT tokens securely (httpOnly cookies or secure storage)
+   - Never expose tokens in URLs or logs
+   - Clear tokens on logout
+
+2. **Token Lifecycle:**
+   - Implement automatic refresh before expiry
+   - Handle token expiration gracefully
+   - Re-authenticate on refresh failure
+
+3. **Security:**
+   - Use HTTPS for all authentication endpoints
+   - Validate redirect URIs
+   - Implement CSRF protection for web clients
+
+4. **Multi-Tenancy:**
+   - Ensure complete user isolation
+   - Never share tokens between users
+   - Validate user context on every request
+
+## Troubleshooting
+
+### OAuth Flow Not Working
+
+**Symptoms:** Redirect loop or authorization errors
+
+**Solutions:**
+1. Verify redirect URI matches OAuth app configuration
+2. Check client ID and secret are correct
+3. Ensure ClickUp account has API access enabled
+4. Clear browser cookies and try again
+
+### JWT Token Always Expires
+
+**Symptoms:** Token expires immediately after creation
+
+**Solutions:**
+1. Check Worker system time is accurate
+2. Verify JWT_EXPIRY is set correctly
+3. Ensure JWT_SECRET is properly configured
+
+### API Key Decryption Fails
+
+**Symptoms:** "Decryption failed" errors
+
+**Solutions:**
+1. Verify ENCRYPTION_KEY matches the key used for encryption
+2. Check encryption key length (must be 32 bytes base64-encoded)
+3. Re-authenticate to create new encrypted key
+
+## Related Documentation
+
+- [User Management](USER_MANAGEMENT.md) - User account operations
+- [Security Guide](SECURITY.md) - Security best practices
+- [API Reference](../API_REFERENCE.md) - MCP protocol endpoints
+- [Deployment Guide](../DEPLOYMENT.md) - CloudFlare Workers deployment
+
+## References
+
+- [OAuth 2.0 Specification](https://oauth.net/2/)
+- [PKCE RFC 7636](https://tools.ietf.org/html/rfc7636)
+- [JWT RFC 7519](https://tools.ietf.org/html/rfc7519)
+- [ClickUp OAuth Documentation](https://clickup.com/api/developer-portal/authentication/)
+
+---
+*For questions or issues, see [Troubleshooting Guide](../TROUBLESHOOTING.md)*

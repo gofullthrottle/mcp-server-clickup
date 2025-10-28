@@ -1,0 +1,553 @@
+---
+title: [Tool Category] - Tool Reference
+description: Complete reference for [Tool Category] tools in the Remote MCP Server
+keywords: [tool-category, mcp, tools, api, clickup]
+category: tool-reference
+ai_tags: [mcp-tools, tool-category, clickup-api]
+last_updated: [YYYY-MM-DD]
+---
+
+# [Tool Category] - Tool Reference
+
+<!-- AI-OPTIMIZATION: Structured tool documentation for embeddings -->
+
+## Overview
+
+This document provides complete reference documentation for all [Tool Category] tools available in the ClickUp MCP Server. The Remote MCP Server provides **72 tools across 12 categories** for comprehensive ClickUp workspace management.
+
+**[Tool Category] Tools:** [N] tools
+**Tier Availability:** [Free/Premium/Mixed]
+
+## Tool Summary
+
+| Tool Name | Description | Tier | ClickUp API |
+|-----------|-------------|------|-------------|
+| `clickup_[category]_[action1]` | [Brief description] | Free | `[Endpoint]` |
+| `clickup_[category]_[action2]` | [Brief description] | Premium | `[Endpoint]` |
+| `clickup_[category]_[action3]` | [Brief description] | Free | `[Endpoint]` |
+
+## Tool Details
+
+---
+
+### `clickup_[category]_[action]`
+
+**Description:** [Detailed description of what the tool does and when to use it]
+
+**Tier:** Free | Premium
+
+**Parameters:**
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `param1` | string | Yes | [Description] | - |
+| `param2` | number | No | [Description] | `100` |
+| `param3` | boolean | No | [Description] | `false` |
+
+**Example Request:**
+```json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "clickup_[category]_[action]",
+    "arguments": {
+      "param1": "value",
+      "param2": 200,
+      "param3": true
+    }
+  }
+}
+```
+
+**Example Response:**
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Operation completed successfully"
+    }
+  ],
+  "isError": false
+}
+```
+
+**Error Responses:**
+
+| Error Code | Message | Cause | Solution |
+|------------|---------|-------|----------|
+| `invalid_param` | Invalid parameter value | [Cause] | [Solution] |
+| `not_found` | Resource not found | [Cause] | [Solution] |
+| `permission_denied` | Insufficient permissions | [Cause] | [Solution] |
+
+**ClickUp API Endpoint:** `POST /api/v2/[endpoint]`
+
+**Rate Limiting:**
+- Free tier: 100 requests/minute
+- Premium tier: 500 requests/minute
+
+**Best Practices:**
+- [Best practice 1]
+- [Best practice 2]
+- [Best practice 3]
+
+**Related Tools:**
+- [`clickup_[related_tool1]`](#clickup_related_tool1)
+- [`clickup_[related_tool2]`](#clickup_related_tool2)
+
+---
+
+### `clickup_[category]_[action2]`
+
+**Description:** [Detailed description]
+
+**Tier:** Premium
+
+[Continue same structure as above for each tool]
+
+---
+
+## Usage Examples
+
+### Example 1: [Common Use Case]
+
+**Scenario:** [Description of the use case]
+
+**Steps:**
+1. [Step 1 description]
+2. [Step 2 description]
+3. [Step 3 description]
+
+**Implementation:**
+```typescript
+// Step 1: [Action]
+const result1 = await mcpClient.call({
+  method: 'tools/call',
+  params: {
+    name: 'clickup_[category]_[action]',
+    arguments: {
+      param1: 'value'
+    }
+  }
+});
+
+// Step 2: [Action]
+const result2 = await mcpClient.call({
+  method: 'tools/call',
+  params: {
+    name: 'clickup_[category]_[action2]',
+    arguments: {
+      param1: result1.data.id,
+      param2: 'value'
+    }
+  }
+});
+
+console.log('Success:', result2);
+```
+
+**Expected Output:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "item_123",
+    "status": "completed"
+  }
+}
+```
+
+### Example 2: [Advanced Use Case]
+
+[Similar structure as Example 1]
+
+### Example 3: [Bulk Operations]
+
+**Scenario:** [Bulk operation scenario]
+
+**Implementation:**
+```typescript
+// Process multiple items
+const items = ['item1', 'item2', 'item3'];
+
+for (const item of items) {
+  const result = await mcpClient.call({
+    method: 'tools/call',
+    params: {
+      name: 'clickup_[category]_[action]',
+      arguments: {
+        item_id: item,
+        action: 'update'
+      }
+    }
+  });
+  console.log(`Processed ${item}:`, result);
+}
+```
+
+## Parameter Reference
+
+### Common Parameters
+
+Many tools in this category share common parameters:
+
+#### `workspace_id` or `team_id`
+- **Type:** string
+- **Required:** Yes (for most operations)
+- **Description:** ClickUp workspace/team identifier
+- **Example:** `"12345678"`
+- **How to get:** Use `clickup_workspace_hierarchy` tool
+
+#### `list_id`
+- **Type:** string
+- **Required:** Yes (for list-specific operations)
+- **Description:** ClickUp list identifier
+- **Example:** `"90144360426"`
+- **How to get:** Use `clickup_list_get_lists` or `clickup_workspace_hierarchy`
+
+#### `custom_field_id`
+- **Type:** string
+- **Required:** Yes (for custom field operations)
+- **Description:** Custom field identifier
+- **Example:** `"cf_abc123"`
+- **How to get:** Use `clickup_custom_field_list` tool
+
+### Parameter Validation
+
+**ID Formats:**
+- Workspace ID: Numeric string (e.g., `"12345678"`)
+- List ID: Numeric string (e.g., `"90144360426"`)
+- Task ID: Alphanumeric (e.g., `"abc123"` or custom ID like `"TASK-123"`)
+- Custom Field ID: Prefixed format (e.g., `"cf_abc123"`)
+
+**String Limits:**
+- Task names: 1-1000 characters
+- Descriptions: Up to 100,000 characters
+- Tag names: 1-100 characters
+
+**Numeric Ranges:**
+- Priorities: 1-4 (1=urgent, 4=low)
+- Time estimates: 0-999999999 milliseconds
+- Positions: 0-999999 (ordering)
+
+## Tier Comparison
+
+### Free Tier Tools
+The following tools are available in the free tier:
+
+| Tool | Description | Rate Limit |
+|------|-------------|------------|
+| `clickup_[free_tool1]` | [Description] | 100/min |
+| `clickup_[free_tool2]` | [Description] | 100/min |
+
+### Premium Tier Tools
+Upgrade to Premium ($4.99/month) for these additional tools:
+
+| Tool | Description | Rate Limit |
+|------|-------------|------------|
+| `clickup_[premium_tool1]` | [Description] | 500/min |
+| `clickup_[premium_tool2]` | [Description] | 500/min |
+
+[See [Premium Features Guide](PREMIUM_FEATURES.md) for upgrade details]
+
+## Error Handling
+
+### Common Errors Across All Tools
+
+#### Authentication Errors
+```json
+{
+  "error": {
+    "code": "unauthorized",
+    "message": "Invalid or expired JWT token"
+  }
+}
+```
+**Solution:** Refresh JWT token or re-authenticate via OAuth.
+
+#### Rate Limit Errors
+```json
+{
+  "error": {
+    "code": "rate_limited",
+    "message": "Rate limit exceeded",
+    "details": {
+      "limit": 100,
+      "reset_in_seconds": 45
+    }
+  }
+}
+```
+**Solution:** Wait for rate limit reset or upgrade to Premium tier.
+
+#### ClickUp API Errors
+```json
+{
+  "error": {
+    "code": "clickup_api_error",
+    "message": "ClickUp API returned error",
+    "details": {
+      "status": 404,
+      "clickup_error": "Resource not found"
+    }
+  }
+}
+```
+**Solution:** Verify resource exists and user has permissions.
+
+### Tool-Specific Error Handling
+
+```typescript
+// Example: Robust error handling
+async function callTool(toolName: string, args: any) {
+  try {
+    const result = await mcpClient.call({
+      method: 'tools/call',
+      params: { name: toolName, arguments: args }
+    });
+    return result;
+  } catch (error) {
+    if (error.code === 'rate_limited') {
+      console.log('Rate limited, retrying in 60s...');
+      await sleep(60000);
+      return callTool(toolName, args); // Retry
+    } else if (error.code === 'unauthorized') {
+      console.log('Token expired, refreshing...');
+      await refreshToken();
+      return callTool(toolName, args); // Retry with new token
+    } else {
+      console.error('Unhandled error:', error);
+      throw error;
+    }
+  }
+}
+```
+
+## Performance Optimization
+
+### Batching Requests
+When possible, use batch operations to reduce API calls:
+
+```typescript
+// ❌ Bad - Multiple individual calls
+for (const taskId of taskIds) {
+  await mcpClient.call({
+    method: 'tools/call',
+    params: {
+      name: 'clickup_task_get',
+      arguments: { task_id: taskId }
+    }
+  });
+}
+
+// ✅ Good - Use bulk operations when available
+await mcpClient.call({
+  method: 'tools/call',
+  params: {
+    name: 'clickup_task_bulk_get',
+    arguments: { task_ids: taskIds }
+  }
+});
+```
+
+### Caching Strategies
+Cache frequently accessed data to reduce API calls:
+
+```typescript
+// Cache workspace hierarchy (rarely changes)
+const hierarchyCache = new Map();
+
+async function getHierarchy(workspaceId: string) {
+  if (hierarchyCache.has(workspaceId)) {
+    return hierarchyCache.get(workspaceId);
+  }
+
+  const hierarchy = await mcpClient.call({
+    method: 'tools/call',
+    params: {
+      name: 'clickup_workspace_hierarchy',
+      arguments: { team_id: workspaceId }
+    }
+  });
+
+  hierarchyCache.set(workspaceId, hierarchy);
+  return hierarchy;
+}
+```
+
+### Rate Limit Management
+Track and manage rate limits proactively:
+
+```typescript
+class RateLimiter {
+  private requests = 0;
+  private resetTime = Date.now() + 60000;
+
+  async checkLimit(tier: 'free' | 'premium') {
+    const limit = tier === 'free' ? 100 : 500;
+
+    if (Date.now() > this.resetTime) {
+      this.requests = 0;
+      this.resetTime = Date.now() + 60000;
+    }
+
+    if (this.requests >= limit) {
+      const waitMs = this.resetTime - Date.now();
+      console.log(`Rate limit reached, waiting ${waitMs}ms`);
+      await sleep(waitMs);
+      this.requests = 0;
+      this.resetTime = Date.now() + 60000;
+    }
+
+    this.requests++;
+  }
+}
+```
+
+## Integration Patterns
+
+### Pattern 1: Task Creation Workflow
+
+```typescript
+// Complete task creation workflow
+async function createTaskWorkflow(data: TaskData) {
+  // 1. Get workspace hierarchy
+  const hierarchy = await mcpClient.call({
+    method: 'tools/call',
+    params: {
+      name: 'clickup_workspace_hierarchy',
+      arguments: { team_id: data.workspaceId }
+    }
+  });
+
+  // 2. Find target list
+  const listId = findListByName(hierarchy, data.listName);
+
+  // 3. Create task
+  const task = await mcpClient.call({
+    method: 'tools/call',
+    params: {
+      name: 'clickup_task_create',
+      arguments: {
+        list_id: listId,
+        name: data.taskName,
+        description: data.description
+      }
+    }
+  });
+
+  // 4. Add tags
+  if (data.tags?.length) {
+    await mcpClient.call({
+      method: 'tools/call',
+      params: {
+        name: 'clickup_task_add_tags',
+        arguments: {
+          task_id: task.data.id,
+          tags: data.tags
+        }
+      }
+    });
+  }
+
+  return task;
+}
+```
+
+### Pattern 2: Bulk Updates
+
+[Additional pattern examples]
+
+## Testing
+
+### Unit Testing Tools
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('[Tool Category] Tools', () => {
+  it('should [test description]', async () => {
+    const result = await mcpClient.call({
+      method: 'tools/call',
+      params: {
+        name: 'clickup_[category]_[action]',
+        arguments: {
+          param1: 'test_value'
+        }
+      }
+    });
+
+    expect(result.content[0].text).toContain('expected');
+    expect(result.isError).toBe(false);
+  });
+});
+```
+
+### Integration Testing
+
+```typescript
+// End-to-end test
+describe('[Category] Integration', () => {
+  it('should complete workflow', async () => {
+    // Test complete workflow with real API calls
+  });
+});
+```
+
+## Related Documentation
+
+- [Authentication Guide](AUTHENTICATION.md) - OAuth and JWT tokens
+- [Premium Features](PREMIUM_FEATURES.md) - Tier comparison and upgrade
+- [API Reference](API_REFERENCE.md) - MCP protocol details
+- [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
+
+## Tool Development
+
+### Adding New Tools
+
+If you're developing custom tools for this category:
+
+1. **Define Tool Schema:**
+```typescript
+const tool = {
+  name: 'clickup_[category]_[action]',
+  description: '[Description]',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      param1: { type: 'string', description: '[Description]' }
+    },
+    required: ['param1']
+  }
+};
+```
+
+2. **Implement Handler:**
+```typescript
+async function handleTool(args: ToolArgs) {
+  // Validate inputs
+  // Call ClickUp API
+  // Format response
+  return result;
+}
+```
+
+3. **Add Tests:**
+```typescript
+describe('New Tool', () => {
+  it('should work correctly', async () => {
+    // Test implementation
+  });
+});
+```
+
+## References
+
+- [ClickUp API v2 Documentation](https://clickup.com/api/clickupreference/operation/[category])
+- [MCP Protocol Specification](https://spec.modelcontextprotocol.io/)
+- [Tool Implementation](../src/tools/[category].ts)
+- [Service Layer](../src/services/clickup/[category].ts)
+
+---
+*For questions or issues, see [Troubleshooting Guide](../TROUBLESHOOTING.md)*
+*Last Updated: [YYYY-MM-DD]*
