@@ -1,8 +1,7 @@
 <img src="assets/images/clickup_mcp_server_social_image.png" alt="ClickUp MCP Server" width="100%">
 
-![Total Supporters](https://img.shields.io/badge/🏆%20Total%20Supporters-4-gold)
-[![GitHub Stars](https://img.shields.io/github/stars/TaazKareem/clickup-mcp-server?style=flat&logo=github)](https://github.com/TaazKareem/clickup-mcp-server/stargazers)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/TaazKareem/clickup-mcp-server/graphs/commit-activity)
+[![GitHub Stars](https://img.shields.io/github/stars/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server?style=flat&logo=github)](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/stargazers)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/graphs/commit-activity)
 
 # ClickUp MCP Server - Remote SaaS
 
@@ -300,7 +299,7 @@ Once configured, use natural language with your AI assistant:
 
 ```bash
 # Clone repository
-git clone https://github.com/TaazKareem/clickup-mcp-server.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server.git
 cd clickup-mcp-server
 
 # Install dependencies
@@ -346,7 +345,7 @@ For users who prefer local installation:
   "mcpServers": {
     "ClickUp": {
       "command": "npx",
-      "args": ["-y", "@taazkareem/clickup-mcp-server@latest"],
+      "args": ["-y", "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest"],
       "env": {
         "CLICKUP_API_KEY": "your-api-key",
         "CLICKUP_TEAM_ID": "your-team-id"
@@ -461,12 +460,6 @@ This is an open-source project that helps thousands of users automate their Clic
 - 🚀 Add new features and integrations
 - 🛡️ Enhance security and reliability
 - 📚 Create better documentation
-
-[![Sponsor TaazKareem](https://img.shields.io/badge/Sponsor-TaazKareem-orange?logo=github)](https://github.com/sponsors/TaazKareem)
-
-<a href="https://buymeacoffee.com/taazkareem">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="200" alt="Buy Me A Coffee">
-</a>
 
 ## 📄 License & Legal
 

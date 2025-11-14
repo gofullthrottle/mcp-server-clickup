@@ -12,7 +12,7 @@ assignees: ''
 - [ ] Question/Other
 
 ## Prerequisites (for Bug Reports)
-<!-- ⚠️ Please check the [README Requirements](https://github.com/taazkareem/clickup-mcp-server#requirements) section first -->
+<!-- ⚠️ Please check the [README Requirements](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server#requirements) section first -->
 <!-- Skip this section for Feature Requests -->
 
 **Environment Check:**
