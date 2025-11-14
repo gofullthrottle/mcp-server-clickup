@@ -1,6 +1,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { SpaceService } from '../services/clickup/space.js';
+import { sponsorService } from '../utils/sponsor-service.js';
 
 const SpaceFeaturesSchema = z.object({
   due_dates: z.object({
@@ -274,7 +275,7 @@ export async function handleSpaceTool(
   switch (toolName) {
     case 'clickup_space_list': {
       const spaces = await spaceService.getSpaces(args.archived || false);
-      return {
+      return sponsorService.createResponse({
         spaces: spaces.map(space => ({
           id: space.id,
           name: space.name,
@@ -286,12 +287,12 @@ export async function handleSpaceTool(
           member_count: space.members?.length || 0
         })),
         total: spaces.length
-      };
+      }, true);
     }
 
     case 'clickup_space_get': {
       const space = await spaceService.getSpace(args.space_id);
-      return {
+      return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         private: space.private,
@@ -306,7 +307,7 @@ export async function handleSpaceTool(
           email: m.user.email,
           initials: m.user.initials
         })) || []
-      };
+      }, true);
     }
 
     case 'clickup_space_create': {
@@ -321,12 +322,12 @@ export async function handleSpaceTool(
         multiple_assignees: validated.multiple_assignees,
         features: validated.features as any
       });
-      return {
+      return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         message: `Space "${space.name}" created successfully`,
         features: space.features
-      };
+      }, true);
     }
 
     case 'clickup_space_update': {
@@ -342,30 +343,30 @@ export async function handleSpaceTool(
 
       const { space_id, ...updateData } = validated;
       const space = await spaceService.updateSpace(space_id, updateData as any);
-      return {
+      return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         message: `Space "${space.name}" updated successfully`,
         features: space.features
-      };
+      }, true);
     }
 
     case 'clickup_space_delete': {
       await spaceService.deleteSpace(args.space_id);
-      return {
+      return sponsorService.createResponse({
         message: `Space ${args.space_id} deleted successfully`
-      };
+      }, true);
     }
 
     case 'clickup_space_archive': {
       const archive = args.archive !== false; // Default to true
       const space = await spaceService.archiveSpace(args.space_id, archive);
-      return {
+      return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         archived: space.archived,
         message: `Space "${space.name}" ${archive ? 'archived' : 'unarchived'} successfully`
-      };
+      }, true);
     }
 
     case 'clickup_space_toggle_feature': {
@@ -380,13 +381,13 @@ export async function handleSpaceTool(
         validated.feature as keyof typeof space.features,
         validated.enabled
       );
-      return {
+      return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         feature: validated.feature,
         enabled: validated.enabled,
         message: `Feature "${validated.feature}" ${validated.enabled ? 'enabled' : 'disabled'} in space "${space.name}"`
-      };
+      }, true);
     }
 
     default:
