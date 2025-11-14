@@ -51,7 +51,7 @@ curl https://clickup-mcp.workers.dev/health
 curl https://clickup-mcp.workers.dev/health | jq '.version'
 ```
 
-Ensure you're running the latest version (check [GitHub releases](https://github.com/taazkareem/clickup-mcp-server/releases)).
+Ensure you're running the latest version (check [GitHub releases](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/releases)).
 
 ### 3. OAuth Availability
 
@@ -1189,11 +1189,11 @@ A: The tool may be premium-only. Check [TOOL_REFERENCE.md](TOOL_REFERENCE.md) fo
 ### Community Support
 
 1. **GitHub Issues:**
-   - Report bugs: [github.com/taazkareem/clickup-mcp-server/issues](https://github.com/taazkareem/clickup-mcp-server/issues)
+   - Report bugs: [github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues)
    - Feature requests: Use "Feature Request" template
 
 2. **GitHub Discussions:**
-   - Ask questions: [github.com/taazkareem/clickup-mcp-server/discussions](https://github.com/taazkareem/clickup-mcp-server/discussions)
+   - Ask questions: [github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/discussions](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/discussions)
    - Share tips and tricks
 
 ### Premium Support

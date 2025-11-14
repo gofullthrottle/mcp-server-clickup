@@ -69,7 +69,7 @@ git clone https://github.com/YOUR_USERNAME/clickup-mcp-server.git
 cd clickup-mcp-server
 
 # Add upstream remote (for syncing)
-git remote add upstream https://github.com/taazkareem/clickup-mcp-server.git
+git remote add upstream https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server.git
 ```
 
 ### 2. Install Dependencies
@@ -1226,7 +1226,7 @@ git clone https://github.com/YOUR_USERNAME/clickup-mcp-server.git
 cd clickup-mcp-server
 
 # Add upstream remote
-git remote add upstream https://github.com/taazkareem/clickup-mcp-server.git
+git remote add upstream https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server.git
 
 # Verify remotes
 git remote -v
@@ -1658,8 +1658,8 @@ npm run deploy:production
 - [AUTHENTICATION.md](AUTHENTICATION.md) - OAuth flow
 
 **Community:**
-- GitHub Issues: [Report bugs or request features](https://github.com/taazkareem/clickup-mcp-server/issues)
-- Discussions: [Ask questions](https://github.com/taazkareem/clickup-mcp-server/discussions)
+- GitHub Issues: [Report bugs or request features](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues)
+- Discussions: [Ask questions](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/discussions)
 
 ---
 

@@ -777,4 +777,4 @@ LOG_LEVEL=info                    # Optional
 **Document Version:** 1.0.0
 **Last Updated:** 2025-11-01
 **Maintainer:** ClickUp MCP Server Team
-**Contact:** GitHub Issues (https://github.com/taazkareem/clickup-mcp-server/issues)
+**Contact:** GitHub Issues (https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues)

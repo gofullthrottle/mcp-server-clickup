@@ -24,7 +24,7 @@ ENABLE_ORIGIN_VALIDATION=true \
 ENABLE_RATE_LIMIT=true \
 SSL_KEY_PATH=./ssl/server.key \
 SSL_CERT_PATH=./ssl/server.crt \
-npx @taazkareem/clickup-mcp-server@latest \
+npx @YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest \
   --env CLICKUP_API_KEY=your-api-key \
   --env CLICKUP_TEAM_ID=your-team-id \
   --env ENABLE_SSE=true
@@ -37,7 +37,7 @@ npx @taazkareem/clickup-mcp-server@latest \
   "mcpServers": {
     "ClickUp": {
       "command": "npx",
-      "args": ["-y", "@taazkareem/clickup-mcp-server@latest"],
+      "args": ["-y", "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest"],
       "env": {
         "CLICKUP_API_KEY": "your-api-key",
         "CLICKUP_TEAM_ID": "your-team-id",

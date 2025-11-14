@@ -56,4 +56,4 @@ Based on my analysis, here are the **ClickUp MCP tools that still need to be bui
 - `update_project_config` - Modify project settings
 - `get_conventional_commit_mappings` - Retrieve commit type to task mappings
 
-The current MCP server (`@taazkareem/clickup-mcp-server`) provides basic CRUD operations, but lacks the advanced project management features already implemented in your local Python files. These new tools would expose powerful functionality for dependency tracking, scheduling, and intelligent commit integration.
+The current MCP server (`@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server`) provides basic CRUD operations, but lacks the advanced project management features already implemented in your local Python files. These new tools would expose powerful functionality for dependency tracking, scheduling, and intelligent commit integration.
