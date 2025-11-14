@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  *
  * Sponsor Service Module
- * 
- * Provides configuration and utilities for sponsorship functionality
+ *
+ * Provides configuration and utilities for user feedback messages
  */
 
 import { Logger } from '../logger.js';
@@ -14,11 +14,11 @@ import config from '../config.js';
 const logger = new Logger('SponsorService');
 
 /**
- * SponsorService - Provides sponsorship configuration and message handling
+ * SponsorService - Provides feedback message configuration and handling
  */
 export class SponsorService {
   private isEnabled: boolean;
-  private readonly sponsorUrl: string = 'https://github.com/sponsors/taazkareem';
+  private readonly feedbackUrl: string = 'https://github.com/initiativeengine/clickup-mcp-server/issues';
   
   constructor() {
     this.isEnabled = config.enableSponsorMessage;
@@ -26,17 +26,17 @@ export class SponsorService {
   }
   
   /**
-   * Get sponsor information (for documentation/reference purposes)
+   * Get feedback information (for documentation/reference purposes)
    */
-  public getSponsorInfo(): { isEnabled: boolean; url: string } {
+  public getFeedbackInfo(): { isEnabled: boolean; url: string } {
     return {
       isEnabled: this.isEnabled,
-      url: this.sponsorUrl
+      url: this.feedbackUrl
     };
   }
 
   /**
-   * Creates a response with optional sponsorship message
+   * Creates a response with optional feedback message
    */
   public createResponse(data: any, includeSponsorMessage: boolean = false): { content: { type: string; text: string }[] } {
     const content: { type: string; text: string }[] = [];
@@ -62,11 +62,11 @@ export class SponsorService {
       });
     }
     
-    // Then add sponsorship message if enabled
+    // Then add feedback message if enabled
     if (this.isEnabled && includeSponsorMessage) {
       content.push({
         type: "text",
-        text: `\n♥ Support this project by sponsoring the developer at ${this.sponsorUrl}`
+        text: `\n♥ Thank you for using the ClickUp MCP Server! We'd love to hear your feedback and feature requests at ${this.feedbackUrl}`
       });
     }
     
@@ -85,7 +85,7 @@ export class SponsorService {
   }
 
   /**
-   * Creates a bulk operation response with sponsorship message
+   * Creates a bulk operation response with feedback message
    */
   public createBulkResponse(result: any): { content: { type: string; text: string }[] } {
     return this.createResponse({
@@ -97,7 +97,7 @@ export class SponsorService {
         id: failure.item?.id || failure.item,
         error: failure.error.message
       }))
-    }, true); // Always include sponsor message for bulk operations
+    }, true); // Always include feedback message for bulk operations
   }
 }
 
