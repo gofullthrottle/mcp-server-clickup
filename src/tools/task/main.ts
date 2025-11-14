@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * ClickUp MCP Task Tools
@@ -79,12 +79,23 @@ import { ClickUpTask } from '../../services/clickup/types.js';
  */
 function createHandlerWrapper<T>(
   handler: (params: any) => Promise<T>,
-  formatResponse: (result: T) => any = (result) => result
+  formatResponse: (result: T) => any = (result) => result,
+  toolName?: string
 ) {
   return async (parameters: any) => {
+    const startTime = Date.now();
     try {
       const result = await handler(parameters);
-      return sponsorService.createResponse(formatResponse(result), true);
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = taskService.getRateLimitMetadata();
+      const retryInfo = taskService.getRetryTelemetry();
+
+      return sponsorService.createResponse(formatResponse(result), true, {
+        tool_name: toolName || 'unknown_task_tool',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     } catch (error) {
       return sponsorService.createErrorResponse(error, parameters);
     }
@@ -95,35 +106,43 @@ function createHandlerWrapper<T>(
 // SINGLE TASK OPERATIONS - HANDLER IMPLEMENTATIONS
 //=============================================================================
 
-export const handleCreateTask = createHandlerWrapper(createTaskHandler);
-export const handleGetTask = createHandlerWrapper(getTaskHandler);
+export const handleCreateTask = createHandlerWrapper(createTaskHandler, undefined, 'create_task');
+export const handleGetTask = createHandlerWrapper(getTaskHandler, undefined, 'get_task');
 export const handleGetTasks = createHandlerWrapper(getTasksHandler, (tasks) => ({
   tasks,
   count: tasks.length
-}));
+}), 'get_tasks');
 
 /**
  * Handle task update operation
  */
 export async function handleUpdateTask(parameters: any) {
+  const startTime = Date.now();
   try {
     const result = await updateTaskHandler(taskService, parameters);
-    return sponsorService.createResponse(formatTaskData(result), true);
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = taskService.getRateLimitMetadata();
+
+    return sponsorService.createResponse(formatTaskData(result), true, {
+      tool_name: 'update_task',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo
+    });
   } catch (error) {
     return sponsorService.createErrorResponse(error instanceof Error ? error.message : String(error));
   }
 }
 
-export const handleMoveTask = createHandlerWrapper(moveTaskHandler);
-export const handleDuplicateTask = createHandlerWrapper(duplicateTaskHandler);
+export const handleMoveTask = createHandlerWrapper(moveTaskHandler, undefined, 'move_task');
+export const handleDuplicateTask = createHandlerWrapper(duplicateTaskHandler, undefined, 'duplicate_task');
 export const handleDeleteTask = createHandlerWrapper(deleteTaskHandler, () => ({
   success: true,
   message: "Task deleted successfully"
-}));
+}), 'delete_task');
 export const handleGetTaskComments = createHandlerWrapper(getTaskCommentsHandler, (comments) => ({
   comments,
   count: comments.length
-}));
+}), 'get_task_comments');
 export const handleCreateTaskComment = createHandlerWrapper(createTaskCommentHandler, (comment) => ({
   success: true,
   message: "Comment added successfully",
@@ -131,7 +150,7 @@ export const handleCreateTaskComment = createHandlerWrapper(createTaskCommentHan
     id: `generated-${Date.now()}`,
     comment_text: typeof comment === 'string' ? comment : "Comment text unavailable"
   }
-}));
+}), 'create_task_comment');
 
 //=============================================================================
 // BULK TASK OPERATIONS - HANDLER IMPLEMENTATIONS
@@ -144,7 +163,7 @@ export const handleCreateBulkTasks = createHandlerWrapper(createBulkTasksHandler
   success_count: result.totals.success,
   failure_count: result.totals.failure,
   errors: result.failed.map(f => f.error)
-}));
+}), 'create_bulk_tasks');
 
 export const handleUpdateBulkTasks = createHandlerWrapper(updateBulkTasksHandler, (result: BatchResult<ClickUpTask>) => ({
   successful: result.successful,
@@ -153,7 +172,7 @@ export const handleUpdateBulkTasks = createHandlerWrapper(updateBulkTasksHandler
   success_count: result.totals.success,
   failure_count: result.totals.failure,
   errors: result.failed.map(f => f.error)
-}));
+}), 'update_bulk_tasks');
 
 export const handleMoveBulkTasks = createHandlerWrapper(moveBulkTasksHandler, (result: BatchResult<ClickUpTask>) => ({
   successful: result.successful,
@@ -162,7 +181,7 @@ export const handleMoveBulkTasks = createHandlerWrapper(moveBulkTasksHandler, (r
   success_count: result.totals.success,
   failure_count: result.totals.failure,
   errors: result.failed.map(f => f.error)
-}));
+}), 'move_bulk_tasks');
 
 export const handleDeleteBulkTasks = createHandlerWrapper(deleteBulkTasksHandler, (result: BatchResult<void>) => ({
   successful: result.successful,
@@ -171,7 +190,7 @@ export const handleDeleteBulkTasks = createHandlerWrapper(deleteBulkTasksHandler
   success_count: result.totals.success,
   failure_count: result.totals.failure,
   errors: result.failed.map(f => f.error)
-}));
+}), 'delete_bulk_tasks');
 
 //=============================================================================
 // WORKSPACE TASK OPERATIONS - HANDLER IMPLEMENTATIONS
@@ -180,7 +199,8 @@ export const handleDeleteBulkTasks = createHandlerWrapper(deleteBulkTasksHandler
 export const handleGetWorkspaceTasks = createHandlerWrapper(
   // This adapts the new handler signature to match what createHandlerWrapper expects
   (params) => getWorkspaceTasksHandler(taskService, params),
-  (response) => response // Pass through the response as is
+  (response) => response, // Pass through the response as is
+  'get_workspace_tasks'
 );
 
 //=============================================================================

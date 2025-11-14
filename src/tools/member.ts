@@ -57,9 +57,19 @@ export const resolveAssigneesTool = {
  * Handler for get_workspace_members
  */
 export async function handleGetWorkspaceMembers() {
+    const startTime = Date.now();
     try {
         const members = await workspaceService.getWorkspaceMembers();
-        return sponsorService.createResponse({ members }, true);
+        const executionTime = Date.now() - startTime;
+        const rateLimitInfo = workspaceService.getRateLimitMetadata();
+    const retryInfo = workspaceService.getRetryTelemetry();
+
+        return sponsorService.createResponse({ members }, true, {
+            tool_name: 'get_workspace_members',
+            execution_time_ms: executionTime,
+            rate_limit: rateLimitInfo,
+      retry: retryInfo
+        });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         return sponsorService.createErrorResponse(`Failed to get workspace members: ${errorMessage}`);
@@ -70,18 +80,28 @@ export async function handleGetWorkspaceMembers() {
  * Handler for find_member_by_name
  */
 export async function handleFindMemberByName(parameters: any) {
+    const startTime = Date.now();
     const { nameOrEmail } = parameters;
     if (!nameOrEmail) {
         throw new Error('nameOrEmail is required');
     }
     try {
         const members = await workspaceService.getWorkspaceMembers();
+        const executionTime = Date.now() - startTime;
+        const rateLimitInfo = workspaceService.getRateLimitMetadata();
+    const retryInfo = workspaceService.getRetryTelemetry();
+
         const found = members.find((m: any) =>
             m.email?.toLowerCase() === nameOrEmail.toLowerCase() ||
             m.username?.toLowerCase() === nameOrEmail.toLowerCase() ||
             m.name?.toLowerCase() === nameOrEmail.toLowerCase()
         );
-        return sponsorService.createResponse({ member: found || null }, true);
+        return sponsorService.createResponse({ member: found || null }, true, {
+            tool_name: 'find_member_by_name',
+            execution_time_ms: executionTime,
+            rate_limit: rateLimitInfo,
+      retry: retryInfo
+        });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         return sponsorService.createErrorResponse(`Failed to find member: ${errorMessage}`);
@@ -92,12 +112,17 @@ export async function handleFindMemberByName(parameters: any) {
  * Handler for resolve_assignees
  */
 export async function handleResolveAssignees(parameters: any) {
+    const startTime = Date.now();
     const { assignees } = parameters;
     if (!Array.isArray(assignees)) {
         throw new Error('assignees must be an array');
     }
     try {
         const members = await workspaceService.getWorkspaceMembers();
+        const executionTime = Date.now() - startTime;
+        const rateLimitInfo = workspaceService.getRateLimitMetadata();
+    const retryInfo = workspaceService.getRetryTelemetry();
+
         const resolved = assignees.map((input: string) => {
             const found = members.find((m: any) =>
                 m.email?.toLowerCase() === input.toLowerCase() ||
@@ -106,7 +131,12 @@ export async function handleResolveAssignees(parameters: any) {
             );
             return found ? found.id : null;
         });
-        return sponsorService.createResponse({ userIds: resolved }, true);
+        return sponsorService.createResponse({ userIds: resolved }, true, {
+            tool_name: 'resolve_assignees',
+            execution_time_ms: executionTime,
+            rate_limit: rateLimitInfo,
+      retry: retryInfo
+        });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         return sponsorService.createErrorResponse(`Failed to resolve assignees: ${errorMessage}`);

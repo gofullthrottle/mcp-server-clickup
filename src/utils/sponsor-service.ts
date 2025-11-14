@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * Sponsor Service Module
@@ -9,6 +9,7 @@
 
 import { Logger } from '../logger.js';
 import config from '../config.js';
+import { createSuccessResponse, ToolSuccessResponse } from '../types/responses.js';
 
 // Create logger instance for this module
 const logger = new Logger('SponsorService');
@@ -36,32 +37,85 @@ export class SponsorService {
   }
 
   /**
-   * Creates a response with optional feedback message
+   * Creates a response with optional feedback message and standardized metadata
+   * @param data - The response data
+   * @param includeSponsorMessage - Whether to include feedback message
+   * @param options - Optional metadata (tool_name, execution_time_ms, rate_limit, retry, debug)
    */
-  public createResponse(data: any, includeSponsorMessage: boolean = false): { content: { type: string; text: string }[] } {
+  public createResponse(
+    data: any,
+    includeSponsorMessage: boolean = false,
+    options?: {
+      tool_name?: string;
+      execution_time_ms?: number;
+      rate_limit?: { remaining: number; limit: number; reset_at: number };
+      retry?: { attempted: number; total_delay_ms: number; last_error?: string };
+      debug?: {
+        request_id: string;
+        tool_name: string;
+        timing: {
+          total_ms: number;
+          api_calls: Array<{
+            method: string;
+            path: string;
+            duration: number;
+            status?: number;
+            error?: string;
+          }>;
+        };
+        api_summary: {
+          total_calls: number;
+          total_api_time_ms: number;
+          success_count: number;
+          error_count: number;
+        };
+      };
+    }
+  ): { content: { type: string; text: string }[] } {
     const content: { type: string; text: string }[] = [];
-    
+
+    // Create standardized response if metadata is provided
+    let responseData: any;
+    if (options) {
+      const standardizedResponse = createSuccessResponse(data, {
+        tool_name: options.tool_name || 'unknown',
+        execution_time_ms: options.execution_time_ms,
+        rate_limit: options.rate_limit,
+        retry: options.retry,
+        debug: options.debug
+      });
+      responseData = standardizedResponse;
+    } else {
+      responseData = data;
+    }
+
     // Special handling for workspace hierarchy which contains a preformatted tree
-    if (data && typeof data === 'object' && 'hierarchy' in data && typeof data.hierarchy === 'string') {
+    if (responseData && typeof responseData === 'object' && 'data' in responseData && typeof responseData.data === 'object' && 'hierarchy' in responseData.data && typeof responseData.data.hierarchy === 'string') {
       // Handle workspace hierarchy specially - it contains a preformatted tree
+      content.push({
+        type: "text",
+        text: responseData.data.hierarchy
+      });
+    } else if (data && typeof data === 'object' && 'hierarchy' in data && typeof data.hierarchy === 'string') {
+      // Legacy handling for direct hierarchy data
       content.push({
         type: "text",
         text: data.hierarchy
       });
-    } else if (typeof data === 'string') {
+    } else if (typeof responseData === 'string') {
       // If it's already a string, use it directly
       content.push({
         type: "text",
-        text: data
+        text: responseData
       });
     } else {
       // Otherwise, stringify the JSON object
       content.push({
         type: "text",
-        text: JSON.stringify(data, null, 2)
+        text: JSON.stringify(responseData, null, 2)
       });
     }
-    
+
     // Then add feedback message if enabled
     if (this.isEnabled && includeSponsorMessage) {
       content.push({
@@ -69,8 +123,8 @@ export class SponsorService {
         text: `\n♥ Thank you for using the ClickUp MCP Server! We'd love to hear your feedback and feature requests at ${this.feedbackUrl}`
       });
     }
-    
-    
+
+
     return { content };
   }
 

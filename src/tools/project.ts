@@ -1,6 +1,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { ProjectService, PROJECT_TEMPLATES } from '../services/clickup/project.js';
+import { sponsorService } from '../utils/sponsor-service.js';
 
 // Create singleton instance
 let projectService: ProjectService | null = null;
@@ -160,6 +161,7 @@ export async function handleProjectTool(
   toolName: string,
   args: any
 ): Promise<any> {
+  const startTime = Date.now();
   const service = getProjectService();
 
   switch (toolName) {
@@ -193,15 +195,24 @@ export async function handleProjectTool(
       };
 
       const result = await service.initializeProject(config);
-      
-      return {
+
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         space_id: result.spaceId,
         folders: result.folders,
         gantt_project: result.ganttProject,
         message: result.message,
         template_used: config.template,
         total_lists_created: result.folders.reduce((sum, f) => sum + f.lists.length, 0)
-      };
+      }, true, {
+        tool_name: 'clickup_project_initialize',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_create_gantt': {
@@ -225,7 +236,11 @@ export async function handleProjectTool(
         priority: validated.priority
       });
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         task_id: result.id,
         name: result.name,
         start_date: result.startDate,
@@ -233,7 +248,12 @@ export async function handleProjectTool(
         duration_days: result.duration,
         url: result.url,
         message: `Gantt project "${result.name}" created successfully`
-      };
+      }, true, {
+        tool_name: 'clickup_project_create_gantt',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_apply_template': {
@@ -243,13 +263,22 @@ export async function handleProjectTool(
       }).parse(args);
 
       const result = await service.applyTemplate(validated.space_id, validated.template);
-      
-      return {
+
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         folders: result.folders,
         message: result.message,
         total_folders: result.folders.length,
         total_lists: result.folders.reduce((sum, f) => sum + f.lists.length, 0)
-      };
+      }, true, {
+        tool_name: 'clickup_project_apply_template',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_create_milestones': {
@@ -265,7 +294,11 @@ export async function handleProjectTool(
         validated.project_duration_days
       );
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         milestones: milestones.map(m => ({
           id: m.id,
           name: m.name,
@@ -273,20 +306,34 @@ export async function handleProjectTool(
         })),
         count: milestones.length,
         message: `Created ${milestones.length} project milestones`
-      };
+      }, true, {
+        tool_name: 'clickup_project_create_milestones',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_get_templates': {
       const templates = service.getTemplates();
-      
-      return {
+
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         templates: templates.map(t => ({
           name: t.name,
           description: t.description,
           structure: PROJECT_TEMPLATES[t.name]
         })),
         count: templates.length
-      };
+      }, true, {
+        tool_name: 'clickup_project_get_templates',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     default:
