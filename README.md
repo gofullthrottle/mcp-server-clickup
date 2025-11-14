@@ -141,7 +141,7 @@ Most MCP-compatible clients support remote servers. Use:
 ┗━ 🔗 Other: 1 tool (utilities)
 ```
 
-All tools tested and validated via `test-all-tools-ultrathink.js`
+All tools tested and validated via `npm run test:ultrathink`
 
 ## 💎 Upgrade to Premium
 
@@ -326,7 +326,7 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for complete self-hosting instructions includ
 
 ```bash
 # Run comprehensive tool testing
-node test-all-tools-ultrathink.js
+npm run test:ultrathink
 
 # Run unit tests
 npm test
