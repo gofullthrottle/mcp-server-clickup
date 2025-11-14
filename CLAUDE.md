@@ -25,7 +25,7 @@ The Remote MCP Server provides **72 tools across 12 categories**:
 | **View Management** | 1 | Create and configure custom views |
 | **Other** | 1 | Additional utility tools |
 
-All tools are tested and validated via `test-all-tools-ultrathink.js` which performs comprehensive ultra-think analysis.
+All tools are tested and validated via `tests/scripts/test-all-tools-ultrathink.js` which performs comprehensive ultra-think analysis.
 
 ## Build and Development Commands
 
@@ -44,7 +44,7 @@ node build/index.js            # Direct execution (requires API keys)
 
 # Testing
 npm run test                   # Run test suite
-node test-all-tools-ultrathink.js  # Test all 72 tools
+npm run test:ultrathink        # Test all 72 tools with ultra-think analysis
 ```
 
 ## Architecture - Remote MCP Server
@@ -210,7 +210,7 @@ curl -X POST https://your-worker.workers.dev/mcp \
   -d '{"method": "tools/list"}'
 
 # Ultra-think comprehensive testing
-node test-all-tools-ultrathink.js
+npm run test:ultrathink
 ```
 
 ### Traditional MCP Testing

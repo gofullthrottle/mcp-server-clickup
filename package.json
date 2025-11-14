@@ -1,7 +1,7 @@
 {
-  "name": "@taazkareem/clickup-mcp-server",
-  "version": "0.8.5",
-  "description": "ClickUp MCP Server - Integrate ClickUp tasks with AI through Model Context Protocol",
+  "name": "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server",
+  "version": "1.0.0",
+  "description": "ClickUp Remote MCP Server - CloudFlare Workers SaaS with OAuth 2.0 for AI task management",
   "type": "module",
   "main": "build/index.js",
   "bin": {
@@ -35,6 +35,7 @@
     "tail": "wrangler tail",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
+    "test:ultrathink": "node tests/scripts/test-all-tools-ultrathink.js",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -61,16 +62,16 @@
     "task-organization",
     "project-organization"
   ],
-  "author": "Talib Kareem",
+  "author": "John Freier",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/taazkareem/clickup-mcp-server.git"
+    "url": "git+https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/taazkareem/clickup-mcp-server/issues"
+    "url": "https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues"
   },
-  "homepage": "https://github.com/taazkareem/clickup-mcp-server#readme",
+  "homepage": "https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server#readme",
   "dependencies": {
     "@hono/oauth-providers": "^0.8.5",
     "@modelcontextprotocol/sdk": "^1.11.3",
