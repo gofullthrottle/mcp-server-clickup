@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "build:worker": "esbuild src/worker.ts --bundle --format=esm --platform=browser --outfile=dist/worker.js --external:node:*",
+    "build:worker": "esbuild src/worker.ts --bundle --format=esm --platform=browser --outfile=dist/worker.js --external:node:* --minify --drop:console --tree-shaking=true --target=es2022",
     "start": "node build/index.js",
     "dev": "tsc -w",
     "dev:worker": "wrangler dev --env development",
@@ -75,7 +75,6 @@
   "dependencies": {
     "@hono/oauth-providers": "^0.8.5",
     "@modelcontextprotocol/sdk": "^1.11.3",
-    "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
