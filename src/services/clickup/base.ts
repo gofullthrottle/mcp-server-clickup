@@ -5,13 +5,13 @@
  * Base ClickUp Service Class
  * 
  * This class provides core functionality for all ClickUp service modules:
- * - Axios client configuration
+ * - HTTP client configuration (fetch-based)
  * - Rate limiting and request throttling
  * - Error handling
  * - Common request methods
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { HttpClient, createHttpClient, HttpRequestConfig, HttpError } from '../../utils/http-client.js';
 import { Logger, LogLevel } from '../../logger.js';
 
 /**
@@ -100,7 +100,7 @@ function safeJsonParse(data: any, fallback: any = undefined): any {
 export class BaseClickUpService {
   protected readonly apiKey: string;
   protected readonly teamId: string;
-  protected readonly client: AxiosInstance;
+  protected readonly client: HttpClient;
   protected readonly logger: Logger;
   
   protected readonly defaultRequestSpacing = 600; // Default milliseconds between requests
@@ -126,8 +126,8 @@ export class BaseClickUpService {
     const className = this.constructor.name;
     this.logger = new Logger(`ClickUp:${className}`);
 
-    // Configure the Axios client with default settings
-    this.client = axios.create({
+    // Configure the HTTP client with default settings
+    this.client = createHttpClient({
       baseURL: baseUrl,
       headers: {
         'Authorization': apiKey,
@@ -138,10 +138,10 @@ export class BaseClickUpService {
         // Add custom response transformer to handle both JSON and text responses
         (data: any) => {
           if (!data) return data;
-          
+
           // If it's already an object, return as is
           if (typeof data !== 'string') return data;
-          
+
           // Try to parse as JSON, fall back to raw text if parsing fails
           const parsed = safeJsonParse(data, null);
           return parsed !== null ? parsed : data;
@@ -154,17 +154,17 @@ export class BaseClickUpService {
     // Add response interceptor for error handling
     this.client.interceptors.response.use(
       response => response,
-      error => this.handleAxiosError(error)
+      error => this.handleHttpError(error)
     );
   }
 
   /**
-   * Handle errors from Axios requests
+   * Handle errors from HTTP requests
    * @private
-   * @param error Error from Axios
+   * @param error Error from HTTP client
    * @returns Never - always throws an error
    */
-  private handleAxiosError(error: any): never {
+  private handleHttpError(error: any): never {
     // Determine error details
     const status = error.response?.status;
     const responseData = error.response?.data;
