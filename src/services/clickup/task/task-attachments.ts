@@ -36,24 +36,21 @@ export class TaskServiceAttachments {
 
     try {
       return await (this.core as any).makeRequest(async () => {
-        // Create FormData for multipart/form-data upload
-        const FormData = (await import('form-data')).default;
+        // Create FormData for multipart/form-data upload (native Web API)
         const formData = new FormData();
 
-        // Add the file to the form data
-        formData.append('attachment', fileData, {
-          filename: fileName,
-          contentType: 'application/octet-stream' // Let ClickUp determine the content type
-        });
+        // Convert Buffer to Blob and add to form data
+        const blob = new Blob([fileData], { type: 'application/octet-stream' });
+        formData.append('attachment', blob, fileName);
 
-        // Use the raw axios client for this request since we need to handle FormData
+        // Use the HTTP client for this request with FormData
         const response = await (this.core as any).client.post(
           `/task/${taskId}/attachment`,
           formData,
           {
             headers: {
-              ...formData.getHeaders(),
               'Authorization': (this.core as any).apiKey
+              // FormData automatically sets Content-Type with boundary
             }
           }
         );
@@ -83,41 +80,36 @@ export class TaskServiceAttachments {
 
     try {
       return await (this.core as any).makeRequest(async () => {
-        // Import required modules
-        const axios = (await import('axios')).default;
-        const FormData = (await import('form-data')).default;
-        
-        // Download the file from the URL
+        // Download the file from the URL using fetch
         const headers: Record<string, string> = {};
         if (authHeader) {
           headers['Authorization'] = authHeader;
         }
-        
-        const response = await axios.get(fileUrl, {
-          responseType: 'arraybuffer',
-          headers
-        });
-        
+
+        const response = await fetch(fileUrl, { headers });
+        if (!response.ok) {
+          throw new Error(`Failed to download file: ${response.statusText}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
+
         // Extract filename from URL if not provided
         const actualFileName = fileName || fileUrl.split('/').pop() || 'downloaded-file';
-        
-        // Create FormData for multipart/form-data upload
+
+        // Create FormData for multipart/form-data upload (native Web API)
         const formData = new FormData();
-        
-        // Add the file to the form data
-        formData.append('attachment', Buffer.from(response.data), {
-          filename: actualFileName,
-          contentType: 'application/octet-stream'
-        });
-        
+
+        // Convert ArrayBuffer to Blob and add to form data
+        const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+        formData.append('attachment', blob, actualFileName);
+
         // Upload the file to ClickUp
         const uploadResponse = await (this.core as any).client.post(
           `/task/${taskId}/attachment`,
           formData,
           {
             headers: {
-              ...formData.getHeaders(),
               'Authorization': (this.core as any).apiKey
+              // FormData automatically sets Content-Type with boundary
             }
           }
         );
