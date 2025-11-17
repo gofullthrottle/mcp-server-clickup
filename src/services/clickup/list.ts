@@ -12,7 +12,6 @@
  * - Finding lists by name
  */
 
-import { AxiosError } from 'axios';
 import { BaseClickUpService, ErrorCode, ClickUpServiceError, ServiceResponse } from './base.js';
 import { 
   ClickUpList,

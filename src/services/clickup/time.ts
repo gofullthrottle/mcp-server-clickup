@@ -13,16 +13,7 @@
  */
 
 import { BaseClickUpService, ServiceResponse, ErrorCode, ClickUpServiceError } from './base.js';
-
-// Local type definition instead of importing from axios
-interface AxiosResponse<T = any> {
-  data: T;
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-  config: any;
-  request?: any;
-}
+import { HttpResponse } from '../../utils/http-client.js';
 
 /**
  * Time entry object as returned by the ClickUp API
@@ -126,7 +117,7 @@ export class TimeTrackingService extends BaseClickUpService {
       const path = `/task/${taskId}/time`;
       this.traceRequest('GET', path, query);
       
-      const response = await this.makeRequest<AxiosResponse<TimeEntriesResponse>>(() =>
+      const response = await this.makeRequest<HttpResponse<TimeEntriesResponse>>(() =>
         this.client.get(path, {
           params: query
         })
@@ -170,7 +161,7 @@ export class TimeTrackingService extends BaseClickUpService {
       const path = `/team/${this.teamId}/time_entries/start`;
       this.traceRequest('POST', path, data);
       
-      const response = await this.makeRequest<AxiosResponse<{ data: ClickUpTimeEntry }>>(() =>
+      const response = await this.makeRequest<HttpResponse<{ data: ClickUpTimeEntry }>>(() =>
         this.client.post(path, data)
       );
       
@@ -212,7 +203,7 @@ export class TimeTrackingService extends BaseClickUpService {
       const path = `/team/${this.teamId}/time_entries/stop`;
       this.traceRequest('POST', path, data || {});
       
-      const response = await this.makeRequest<AxiosResponse<{ data: ClickUpTimeEntry }>>(() =>
+      const response = await this.makeRequest<HttpResponse<{ data: ClickUpTimeEntry }>>(() =>
         this.client.post(path, data || {})
       );
       
@@ -254,7 +245,7 @@ export class TimeTrackingService extends BaseClickUpService {
       const path = `/team/${this.teamId}/time_entries`;
       this.traceRequest('POST', path, data);
       
-      const response = await this.makeRequest<AxiosResponse<{ data: ClickUpTimeEntry }>>(() =>
+      const response = await this.makeRequest<HttpResponse<{ data: ClickUpTimeEntry }>>(() =>
         this.client.post(path, data)
       );
       
@@ -296,7 +287,7 @@ export class TimeTrackingService extends BaseClickUpService {
       const path = `/team/${this.teamId}/time_entries/${timeEntryId}`;
       this.traceRequest('DELETE', path);
       
-      await this.makeRequest<AxiosResponse<any>>(() =>
+      await this.makeRequest<HttpResponse<any>>(() =>
         this.client.delete(path)
       );
       
@@ -337,7 +328,7 @@ export class TimeTrackingService extends BaseClickUpService {
       const path = `/team/${this.teamId}/time_entries/current`;
       this.traceRequest('GET', path);
       
-      const response = await this.makeRequest<AxiosResponse<{ data: ClickUpTimeEntry | null }>>(() =>
+      const response = await this.makeRequest<HttpResponse<{ data: ClickUpTimeEntry | null }>>(() =>
         this.client.get(path)
       );
       
