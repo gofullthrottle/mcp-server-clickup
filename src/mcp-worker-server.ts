@@ -7,7 +7,7 @@ import {
   GetPromptRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
 import { Env } from './worker.js';
-import { clickUpServices } from './services/shared.js';
+import { createClickUpServices, ClickUpServices } from './services/clickup/index.js';
 import { configureServer } from './server.js';
 
 export interface MCPConfig {
@@ -22,6 +22,7 @@ export class MCPServer {
   private server: Server;
   private config: MCPConfig;
   private allTools: Map<string, any> = new Map();
+  private services: ClickUpServices;
 
   constructor(private env: Env, config: MCPConfig) {
     this.config = config;
@@ -29,10 +30,13 @@ export class MCPServer {
       name: 'clickup-mcp-server',
       version: '1.0.0'
     });
-    
-    // Initialize ClickUp services with user's API key
-    clickUpServices.init(config.apiKey, config.teamId);
-    
+
+    // Create per-user ClickUp services instance
+    this.services = createClickUpServices({
+      apiKey: config.apiKey,
+      teamId: config.teamId
+    });
+
     this.initializeTools();
     this.setupHandlers();
   }
@@ -93,11 +97,19 @@ export class MCPServer {
       // Execute tool handler
       try {
         const result = await this.executeToolHandler(name, args);
-        
+
         // Log tool usage for analytics
         await this.logToolUsage(name);
-        
-        return result;
+
+        // Wrap result in MCP content format
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: typeof result === 'string' ? result : JSON.stringify(result, null, 2)
+            }
+          ]
+        };
       } catch (error) {
         console.error(`Error executing tool ${name}:`, error);
         throw error;
@@ -157,27 +169,77 @@ export class MCPServer {
    * Execute a tool handler with the appropriate service
    */
   private async executeToolHandler(toolName: string, args: any) {
-    // Map tool names to their handlers
-    // This would be dynamically imported based on tool category
-    
-    const handlers = await this.getToolHandlers();
-    const handler = handlers[toolName];
-    
-    if (!handler) {
-      throw new Error(`No handler found for tool: ${toolName}`);
-    }
-    
-    return handler(args);
-  }
+    // Direct service method execution based on tool name
+    // This is a simplified implementation - full tool handlers are in server.ts
 
-  /**
-   * Get all tool handlers
-   */
-  private async getToolHandlers() {
-    // Import and return all tool handlers
-    // This would be optimized in production to lazy-load
-    const { toolHandlers } = await import('./tools/handlers.js');
-    return toolHandlers;
+    try {
+      // Route to appropriate service based on tool name prefix
+      switch (toolName) {
+        // Workspace tools
+        case 'get_workspace_hierarchy':
+        case 'clickup_workspace_hierarchy':
+          return await this.services.workspace.getWorkspaceHierarchy();
+
+        // Task tools
+        case 'create_task':
+        case 'clickup_task_create':
+          return await this.services.task.createTask(args.list_id, args);
+
+        case 'get_task':
+        case 'clickup_task_get':
+          return await this.services.task.getTask(args.task_id);
+
+        case 'update_task':
+        case 'clickup_task_update':
+          return await this.services.task.updateTask(args.task_id, args);
+
+        case 'delete_task':
+        case 'clickup_task_delete':
+          return await this.services.task.deleteTask(args.task_id);
+
+        // List tools
+        case 'create_list':
+        case 'clickup_list_create':
+          return await this.services.list.createList(args.space_id, args);
+
+        case 'get_list':
+        case 'clickup_list_get':
+          return await this.services.list.getList(args.list_id);
+
+        case 'update_list':
+        case 'clickup_list_update':
+          return await this.services.list.updateList(args.list_id, args);
+
+        case 'delete_list':
+        case 'clickup_list_delete':
+          return await this.services.list.deleteList(args.list_id);
+
+        // Space tools
+        case 'get_spaces':
+        case 'clickup_space_list':
+          return await this.services.space.getSpaces();
+
+        case 'get_space':
+        case 'clickup_space_get':
+          return await this.services.space.getSpace(args.space_id);
+
+        // Time tracking tools
+        case 'get_time_entries':
+        case 'clickup_time_get_entries':
+          return await this.services.timeTracking.getTimeEntries(args);
+
+        case 'create_time_entry':
+        case 'clickup_time_create_entry':
+          return await this.services.timeTracking.createTimeEntry(args);
+
+        // Default error for unimplemented tools
+        default:
+          throw new Error(`Tool '${toolName}' is not yet implemented in CloudFlare Workers mode. Full implementation coming soon.`);
+      }
+    } catch (error) {
+      console.error(`Error executing tool ${toolName}:`, error);
+      throw error;
+    }
   }
 
   /**
@@ -199,22 +261,140 @@ export class MCPServer {
   }
 
   /**
-   * Handle MCP request
+   * Handle MCP request (Direct JSON-RPC handling)
    */
   async handleRequest(request: any) {
     try {
-      // Process the request through the MCP server
-      const response = await this.server.handleRequest(request);
-      return response;
+      const { method, params, id } = request;
+
+      // Route to appropriate handler based on JSON-RPC method
+      let result: any;
+
+      switch (method) {
+        case 'tools/list':
+          result = await this.handleListTools();
+          break;
+
+        case 'tools/call':
+          result = await this.handleCallTool(params);
+          break;
+
+        case 'resources/list':
+          result = await this.handleListResources();
+          break;
+
+        case 'prompts/list':
+          result = await this.handleListPrompts();
+          break;
+
+        case 'prompts/get':
+          result = await this.handleGetPrompt(params);
+          break;
+
+        case 'initialize':
+          result = await this.handleInitialize(params);
+          break;
+
+        default:
+          throw new Error(`Unknown method: ${method}`);
+      }
+
+      // Return JSON-RPC success response
+      return {
+        jsonrpc: '2.0',
+        id,
+        result
+      };
     } catch (error) {
       console.error('MCP request error:', error);
       return {
+        jsonrpc: '2.0',
+        id: request?.id,
         error: {
           code: -32603,
           message: error instanceof Error ? error.message : 'Internal error'
         }
       };
     }
+  }
+
+  /**
+   * Handle initialize request
+   */
+  private async handleInitialize(params: any) {
+    return {
+      protocolVersion: '2024-11-05',
+      capabilities: {
+        tools: {},
+        resources: {},
+        prompts: {}
+      },
+      serverInfo: {
+        name: 'clickup-mcp-server',
+        version: '1.0.0'
+      }
+    };
+  }
+
+  /**
+   * Handle tools/list request
+   */
+  private async handleListTools() {
+    const filteredTools = this.getFilteredTools();
+    return { tools: filteredTools };
+  }
+
+  /**
+   * Handle tools/call request
+   */
+  private async handleCallTool(params: any) {
+    const { name, arguments: args } = params;
+
+    // Check if tool is available for user
+    if (!this.isToolAvailable(name)) {
+      throw new Error(`Tool '${name}' is not available in your subscription tier`);
+    }
+
+    // Get tool definition
+    const tool = this.allTools.get(name);
+    if (!tool) {
+      throw new Error(`Unknown tool: ${name}`);
+    }
+
+    // Execute tool handler
+    const result = await this.executeToolHandler(name, args);
+
+    // Log tool usage for analytics
+    await this.logToolUsage(name);
+
+    return result;
+  }
+
+  /**
+   * Handle resources/list request
+   */
+  private async handleListResources() {
+    return { resources: [] };
+  }
+
+  /**
+   * Handle prompts/list request
+   */
+  private async handleListPrompts() {
+    return { prompts: [] };
+  }
+
+  /**
+   * Handle prompts/get request
+   */
+  private async handleGetPrompt(params: any) {
+    return {
+      prompt: {
+        name: '',
+        description: '',
+        arguments: []
+      }
+    };
   }
 
   /**

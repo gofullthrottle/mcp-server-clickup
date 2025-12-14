@@ -1,6 +1,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { ProjectService, PROJECT_TEMPLATES } from '../services/clickup/project.js';
+import { sponsorService } from '../utils/sponsor-service.js';
 
 // Create singleton instance
 let projectService: ProjectService | null = null;
@@ -67,34 +68,34 @@ export const projectTools: Tool[] = [
     }
   },
   {
-    name: 'clickup_project_create_gantt',
-    description: 'Create a Gantt project task with timeline support for project management.',
+    name: 'clickup_task_create_with_duration',
+    description: 'Create a task with start date and automatically calculated due date based on duration. Tasks with both dates automatically appear on ClickUp Gantt timeline view.',
     inputSchema: {
       type: 'object',
       properties: {
         list_id: {
           type: 'string',
-          description: 'List ID where the Gantt project will be created'
+          description: 'List ID where the task will be created'
         },
         name: {
           type: 'string',
-          description: 'Project name'
+          description: 'Task name'
         },
         description: {
           type: 'string',
-          description: 'Project description'
+          description: 'Task description'
         },
         start_date: {
           type: 'string',
-          description: 'Project start date (ISO format)'
+          description: 'Task start date (ISO format)'
         },
         duration_days: {
           type: 'number',
-          description: 'Project duration in days'
+          description: 'Duration in days (due date calculated automatically from start_date + duration)'
         },
         estimated_hours: {
           type: 'number',
-          description: 'Total estimated hours for the project'
+          description: 'Total estimated hours for the task'
         },
         priority: {
           type: 'number',
@@ -193,18 +194,18 @@ export async function handleProjectTool(
       };
 
       const result = await service.initializeProject(config);
-      
-      return {
+
+      return sponsorService.createResponse({
         space_id: result.spaceId,
         folders: result.folders,
         gantt_project: result.ganttProject,
         message: result.message,
         template_used: config.template,
         total_lists_created: result.folders.reduce((sum, f) => sum + f.lists.length, 0)
-      };
+      }, true);
     }
 
-    case 'clickup_project_create_gantt': {
+    case 'clickup_task_create_with_duration': {
       const validated = z.object({
         list_id: z.string(),
         name: z.string(),
@@ -218,22 +219,22 @@ export async function handleProjectTool(
       const result = await service.createGanttProject({
         listId: validated.list_id,
         name: validated.name,
-        description: validated.description || `Main project task for ${validated.name}`,
+        description: validated.description || `Task: ${validated.name}`,
         startDate: new Date(validated.start_date),
         durationDays: validated.duration_days,
         estimatedHours: validated.estimated_hours,
         priority: validated.priority
       });
 
-      return {
+      return sponsorService.createResponse({
         task_id: result.id,
         name: result.name,
         start_date: result.startDate,
         due_date: result.dueDate,
         duration_days: result.duration,
         url: result.url,
-        message: `Gantt project "${result.name}" created successfully`
-      };
+        message: `Task "${result.name}" created with duration successfully`
+      }, true);
     }
 
     case 'clickup_project_apply_template': {
@@ -243,13 +244,13 @@ export async function handleProjectTool(
       }).parse(args);
 
       const result = await service.applyTemplate(validated.space_id, validated.template);
-      
-      return {
+
+      return sponsorService.createResponse({
         folders: result.folders,
         message: result.message,
         total_folders: result.folders.length,
         total_lists: result.folders.reduce((sum, f) => sum + f.lists.length, 0)
-      };
+      }, true);
     }
 
     case 'clickup_project_create_milestones': {
@@ -265,7 +266,7 @@ export async function handleProjectTool(
         validated.project_duration_days
       );
 
-      return {
+      return sponsorService.createResponse({
         milestones: milestones.map(m => ({
           id: m.id,
           name: m.name,
@@ -273,20 +274,20 @@ export async function handleProjectTool(
         })),
         count: milestones.length,
         message: `Created ${milestones.length} project milestones`
-      };
+      }, true);
     }
 
     case 'clickup_project_get_templates': {
       const templates = service.getTemplates();
-      
-      return {
+
+      return sponsorService.createResponse({
         templates: templates.map(t => ({
           name: t.name,
           description: t.description,
           structure: PROJECT_TEMPLATES[t.name]
         })),
         count: templates.length
-      };
+      }, true);
     }
 
     default:
