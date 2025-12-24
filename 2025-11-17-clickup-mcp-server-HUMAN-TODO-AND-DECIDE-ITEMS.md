@@ -1,10 +1,163 @@
 # Human TODO & Decision Items
 
+
+#######
+SONARQUBE SELF HOSTED RUNNERS!
+
+⏺ Write(docs/sonarqube-final-implementation-2025-11-13.md)
+  ⎿  Wrote 554 lines to docs/sonarqube-final-implementation-2025-11-13.md
+     # SonarQube Integration - Final Implementation Summary
+     **Date:** 2025-11-13
+     **Status:** ✅ COMPLETE - Ready for Production Use
+     ---
+     ## Executive Summary
+     All requested features have been implemented:
+     … +544 lines (ctrl+o to expand)
+
+⏺ ✅ Complete Implementation - All Requirements Met!
+
+  I've successfully implemented all your requested changes:
+
+  1. ✅ AskUserQuestion Limit Fixed (4 Questions Max)
+
+  Removed:
+  - License type question (hardcoded to Proprietary)
+  - SonarQube question (now mandatory)
+
+  Remaining 4 Questions:
+  1. Repository visibility (Private/Public)
+  2. Pre-commit setup (Yes/No)
+  3. ClickUp integration (Yes/No)
+  4. Auto-PR creation (No/Yes)
+
+  ---
+  2. ✅ SonarQube Project Creation Now MANDATORY
+
+  Every /project-init now:
+  - Creates SonarQube project automatically at http://100.108.180.29:9000
+  - Generates sonar-project.properties file
+  - Does NOT create GitHub Actions workflow (prevents failed CI/CD)
+  - Manual scans work immediately: /sonarqube-scan
+
+  Why no workflow?
+  GitHub.com hosted runners can't reach your private SonarQube (Tailscale IP). You add workflows manually after
+   setting up self-hosted runner.
+
+  ---
+  3. ✅ All Python Scripts Now Have uv Headers
+
+  Updated: ~/.claude/scripts/test-sonarqube-integration.py
+
+  Before:
+  python3 ~/.claude/scripts/test-sonarqube-integration.py
+
+  After (directly executable):
+  ~/.claude/scripts/test-sonarqube-integration.py
+
+  Auto-installs dependencies with uv, no python3 prefix needed!
+
+  ---
+  4. ✅ Self-Hosted GitHub Runner Setup Script Created
+
+  Created: ~/.claude/scripts/setup-github-runner.sh
+
+  Quick Setup on rtx-ubuntu:
+
+  # 1. Copy script to rtx-ubuntu
+  scp ~/.claude/scripts/setup-github-runner.sh rtx-ubuntu:~/
+
+  # 2. SSH and run
+  ssh rtx-ubuntu
+  ./setup-github-runner.sh --user
+
+  # 3. Verify
+  sudo ~/actions-runner/svc.sh status
+
+  What it does:
+  - Downloads GitHub Actions runner
+  - Configures with your GitHub account
+  - Installs as systemd service
+  - Adds sonarqube label
+  - Tests SonarQube connectivity
+  - Idempotent (safe to re-run)
+
+  Result: Runner available for all workflows with runs-on: [self-hosted, sonarqube]
+
+  ---
+  📚 Documentation Created
+
+  1. ~/.claude/docs/github-runner-setup-guide.md - Complete runner setup guide
+  2. ~/.claude/docs/sonarqube-final-implementation-2025-11-13.md - This implementation summary
+
+  ---
+  🚀 Next Steps (Run These Now)
+
+  Step 1: Test Diagnostic Script
+
+  ~/.claude/scripts/test-sonarqube-integration.py
+  Expected: All 7 tests pass ✅
+
+  Step 2: Set Up GitHub Runner on rtx-ubuntu
+
+  # From your machine
+  scp ~/.claude/scripts/setup-github-runner.sh rtx-ubuntu:~/
+
+  # On rtx-ubuntu
+  ssh rtx-ubuntu
+  ./setup-github-runner.sh --user
+
+  Expected: Runner installed and running, visible at https://github.com/settings/actions/runners
+
+  Step 3: Test New /project-init Flow
+
+  mkdir /tmp/test-project && cd /tmp/test-project
+  /project-init
+  # Answer 4 questions (or accept defaults)
+  # Verify SonarQube project created
+  /sonarqube-scan
+
+  Expected:
+  - Only 4 questions asked ✅
+  - SonarQube project created ✅
+  - sonar-project.properties exists ✅
+  - Manual scan works ✅
+
+  ---
+  📖 Complete Documentation
+
+  Full details: ~/.claude/docs/sonarqube-final-implementation-2025-11-13.md
+
+  This includes:
+  - Migration guide for existing projects
+  - Troubleshooting section
+  - CI/CD workflow examples
+  - Security considerations
+
+  Runner setup: ~/.claude/docs/github-runner-setup-guide.md
+
+  Everything you need to get self-hosted runners working with SonarQube.
+
+
+#########
 **Created:** November 1, 2025
 **Estimated Time:** 2-3 hours
 **Priority:** Complete before production deployment
 
 ---
+
+FROM ANSIBLE REPOSITORY:
+
+ Phase 0: Security First (YOU MUST DO THIS FIRST) 🚨
+
+ Found exposed keys:
+ - ~/.config/shell_gpt/.sgptrc line 14: sk-proj-gK0oYI...
+ - roles/dotfiles/files/config/shell_gpt/.sgptrc.example line 15: sk-proj-KQ6Gd3...
+
+ ACTION REQUIRED:
+ 1. Go to https://platform.openai.com/api-keys
+ 2. Revoke both keys above
+ 3. Generate new key
+ 4. Update vault: ansible-vault edit inventories/group_vars/all/vault.yml
 
 ## 🚀 Critical Path to Deployment (2 hours)
 
