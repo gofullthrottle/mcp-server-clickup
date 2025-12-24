@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * ClickUp MCP List Tools
@@ -234,10 +234,14 @@ export async function handleCreateList(parameters: any) {
   if (assignee) listData.assignee = assignee;
   if (status) listData.status = status;
 
+  const startTime = Date.now();
   try {
     // Create the list
     const newList = await listService.createList(targetSpaceId, listData);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = listService.getRateLimitMetadata();
+    const retryInfo = listService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: newList.id,
       name: newList.name,
@@ -248,7 +252,12 @@ export async function handleCreateList(parameters: any) {
       },
       url: `https://app.clickup.com/${config.clickupTeamId}/v/l/${newList.id}`,
       message: `List "${name}" created successfully`
-    }, true);
+    }, true, {
+      tool_name: 'create_list',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to create list: ${error.message}`);
   }
@@ -307,10 +316,14 @@ export async function handleCreateListInFolder(parameters: any) {
   if (content) listData.content = content;
   if (status) listData.status = status;
 
+  const startTime = Date.now();
   try {
     // Create the list in the folder
     const newList = await listService.createListInFolder(targetFolderId, listData);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = listService.getRateLimitMetadata();
+    const retryInfo = listService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: newList.id,
       name: newList.name,
@@ -325,7 +338,12 @@ export async function handleCreateListInFolder(parameters: any) {
       },
       url: `https://app.clickup.com/${config.clickupTeamId}/v/l/${newList.id}`,
       message: `List "${name}" created successfully in folder "${newList.folder.name}"`
-    }, true);
+    }, true, {
+      tool_name: 'create_list_in_folder',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to create list in folder: ${error.message}`);
   }
@@ -353,10 +371,14 @@ export async function handleGetList(parameters: any) {
     throw new Error("Either listId or listName must be provided");
   }
 
+  const startTime = Date.now();
   try {
     // Get the list
     const list = await listService.getList(targetListId);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = listService.getRateLimitMetadata();
+    const retryInfo = listService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: list.id,
       name: list.name,
@@ -366,7 +388,12 @@ export async function handleGetList(parameters: any) {
         name: list.space.name
       },
       url: `https://app.clickup.com/${config.clickupTeamId}/v/l/${list.id}`
-    }, true);
+    }, true, {
+      tool_name: 'get_list',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to retrieve list: ${error.message}`);
   }
@@ -405,10 +432,14 @@ export async function handleUpdateList(parameters: any) {
   if (content) updateData.content = content;
   if (status) updateData.status = status;
 
+  const startTime = Date.now();
   try {
     // Update the list
     const updatedList = await listService.updateList(targetListId, updateData);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = listService.getRateLimitMetadata();
+    const retryInfo = listService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: updatedList.id,
       name: updatedList.name,
@@ -419,7 +450,12 @@ export async function handleUpdateList(parameters: any) {
       },
       url: `https://app.clickup.com/${config.clickupTeamId}/v/l/${updatedList.id}`,
       message: `List "${updatedList.name}" updated successfully`
-    }, true);
+    }, true, {
+      tool_name: 'update_list',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to update list: ${error.message}`);
   }
@@ -447,18 +483,27 @@ export async function handleDeleteList(parameters: any) {
     throw new Error("Either listId or listName must be provided");
   }
 
+  const startTime = Date.now();
   try {
     // Get list details before deletion for confirmation message
     const list = await listService.getList(targetListId);
     const listName = list.name;
-    
+
     // Delete the list
     await listService.deleteList(targetListId);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = listService.getRateLimitMetadata();
+    const retryInfo = listService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       success: true,
       message: `List "${listName || targetListId}" deleted successfully`
-    }, true);
+    }, true, {
+      tool_name: 'delete_list',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to delete list: ${error.message}`);
   }

@@ -1069,7 +1069,7 @@ class LightweightIntelligence:
 - Asana: github.com/roychri/mcp-server-asana
 - Jira: github.com/sooperset/mcp-atlassian
 - Notion: github.com/makenotion/notion-mcp-server
-- ClickUp: github.com/taazkareem/clickup-mcp-server (origin of official)
+- ClickUp: github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server (origin of official)
 - Todoist: github.com/greirson/mcp-todoist (comprehensive, 28 tools)
 
 **AI/ML Implementations:**

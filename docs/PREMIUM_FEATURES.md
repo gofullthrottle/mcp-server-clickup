@@ -741,8 +741,8 @@ A: Yes. Cancel your subscription and your payment information will be removed fr
 ## Support
 
 ### Community Support (Free Tier)
-- GitHub Discussions: [github.com/yourrepo/discussions](https://github.com/TaazKareem/clickup-mcp-server/discussions)
-- GitHub Issues: [github.com/yourrepo/issues](https://github.com/TaazKareem/clickup-mcp-server/issues)
+- GitHub Discussions: [github.com/yourrepo/discussions](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/discussions)
+- GitHub Issues: [github.com/yourrepo/issues](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues)
 
 ### Priority Support (Premium Tier)
 - Email: support@clickup-mcp.workers.dev

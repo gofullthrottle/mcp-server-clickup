@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * ClickUp MCP Folder Tools
@@ -182,10 +182,14 @@ export async function handleCreateFolder(parameters: any) {
   // Add optional fields if provided
   if (override_statuses !== undefined) folderData.override_statuses = override_statuses;
 
+  const startTime = Date.now();
   try {
     // Create the folder
     const newFolder = await folderService.createFolder(targetSpaceId, folderData);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = folderService.getRateLimitMetadata();
+    const retryInfo = folderService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: newFolder.id,
       name: newFolder.name,
@@ -194,7 +198,12 @@ export async function handleCreateFolder(parameters: any) {
         name: newFolder.space.name
       },
       message: `Folder "${newFolder.name}" created successfully`
-    }, true);
+    }, true, {
+      tool_name: 'create_folder',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to create folder: ${error.message}`);
   }
@@ -237,10 +246,14 @@ export async function handleGetFolder(parameters: any) {
     throw new Error("Either folderId or folderName must be provided");
   }
 
+  const startTime = Date.now();
   try {
     // Get the folder
     const folder = await folderService.getFolder(targetFolderId);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = folderService.getRateLimitMetadata();
+    const retryInfo = folderService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: folder.id,
       name: folder.name,
@@ -248,7 +261,12 @@ export async function handleGetFolder(parameters: any) {
         id: folder.space.id,
         name: folder.space.name
       }
-    }, true);
+    }, true, {
+      tool_name: 'get_folder',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to retrieve folder: ${error.message}`);
   }
@@ -301,10 +319,14 @@ export async function handleUpdateFolder(parameters: any) {
   if (name) updateData.name = name;
   if (override_statuses !== undefined) updateData.override_statuses = override_statuses;
 
+  const startTime = Date.now();
   try {
     // Update the folder
     const updatedFolder = await folderService.updateFolder(targetFolderId, updateData);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = folderService.getRateLimitMetadata();
+    const retryInfo = folderService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: updatedFolder.id,
       name: updatedFolder.name,
@@ -313,7 +335,12 @@ export async function handleUpdateFolder(parameters: any) {
         name: updatedFolder.space.name
       },
       message: `Folder "${updatedFolder.name}" updated successfully`
-    }, true);
+    }, true, {
+      tool_name: 'update_folder',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to update folder: ${error.message}`);
   }
@@ -356,18 +383,27 @@ export async function handleDeleteFolder(parameters: any) {
     throw new Error("Either folderId or folderName must be provided");
   }
 
+  const startTime = Date.now();
   try {
     // Get folder details before deletion for confirmation message
     const folder = await folderService.getFolder(targetFolderId);
     const folderName = folder.name;
-    
+
     // Delete the folder
     await folderService.deleteFolder(targetFolderId);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = folderService.getRateLimitMetadata();
+    const retryInfo = folderService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       success: true,
       message: `Folder "${folderName || targetFolderId}" deleted successfully`
-    }, true);
+    }, true, {
+      tool_name: 'delete_folder',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to delete folder: ${error.message}`);
   }

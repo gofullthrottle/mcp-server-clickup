@@ -274,7 +274,12 @@ export async function handleSpaceTool(
 ): Promise<any> {
   switch (toolName) {
     case 'clickup_space_list': {
+      const startTime = Date.now();
       const spaces = await spaceService.getSpaces(args.archived || false);
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         spaces: spaces.map(space => ({
           id: space.id,
@@ -287,11 +292,21 @@ export async function handleSpaceTool(
           member_count: space.members?.length || 0
         })),
         total: spaces.length
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_list',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_space_get': {
+      const startTime = Date.now();
       const space = await spaceService.getSpace(args.space_id);
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         id: space.id,
         name: space.name,
@@ -307,10 +322,16 @@ export async function handleSpaceTool(
           email: m.user.email,
           initials: m.user.initials
         })) || []
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_get',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_space_create': {
+      const startTime = Date.now();
       const validated = z.object({
         name: z.string(),
         multiple_assignees: z.boolean(),
@@ -322,15 +343,25 @@ export async function handleSpaceTool(
         multiple_assignees: validated.multiple_assignees,
         features: validated.features as any
       });
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         message: `Space "${space.name}" created successfully`,
         features: space.features
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_create',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_space_update': {
+      const startTime = Date.now();
       const validated = z.object({
         space_id: z.string(),
         name: z.string().optional(),
@@ -343,33 +374,63 @@ export async function handleSpaceTool(
 
       const { space_id, ...updateData } = validated;
       const space = await spaceService.updateSpace(space_id, updateData as any);
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         message: `Space "${space.name}" updated successfully`,
         features: space.features
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_update',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_space_delete': {
+      const startTime = Date.now();
       await spaceService.deleteSpace(args.space_id);
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         message: `Space ${args.space_id} deleted successfully`
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_delete',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_space_archive': {
+      const startTime = Date.now();
       const archive = args.archive !== false; // Default to true
       const space = await spaceService.archiveSpace(args.space_id, archive);
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         archived: space.archived,
         message: `Space "${space.name}" ${archive ? 'archived' : 'unarchived'} successfully`
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_archive',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_space_toggle_feature': {
+      const startTime = Date.now();
       const validated = z.object({
         space_id: z.string(),
         feature: z.enum(['due_dates', 'time_tracking', 'tags', 'time_estimates', 'checklists', 'custom_fields', 'remap_dependencies', 'dependency_warning', 'portfolios']),
@@ -381,13 +442,22 @@ export async function handleSpaceTool(
         validated.feature as keyof typeof space.features,
         validated.enabled
       );
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = spaceService.getRateLimitMetadata();
+    const retryInfo = spaceService.getRetryTelemetry();
+
       return sponsorService.createResponse({
         id: space.id,
         name: space.name,
         feature: validated.feature,
         enabled: validated.enabled,
         message: `Feature "${validated.feature}" ${validated.enabled ? 'enabled' : 'disabled'} in space "${space.name}"`
-      }, true);
+      }, true, {
+        tool_name: 'clickup_space_toggle_feature',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     default:

@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * ClickUp Tag Tools
@@ -271,25 +271,37 @@ export const removeTagFromTaskTool = {
  * Creates a wrapped handler function with standard error handling and response formatting
  */
 function createHandlerWrapper<T>(
+  toolName: string,
   handler: (params: any) => Promise<T>,
   formatResponse: (result: T) => any = (result) => result
 ) {
   return async (params: any) => {
+    const startTime = Date.now();
     try {
-      logger.debug('Handler called with params', { params });
-      
+      logger.debug('Handler called with params', { params, toolName });
+
       // Call the handler
       const result = await handler(params);
-      
+
       // Format the result for response
       const formattedResult = formatResponse(result);
-      
+
+      // Calculate execution time and get rate limit info
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = taskService.getRateLimitMetadata();
+      const retryInfo = taskService.getRetryTelemetry();
+
       // Use the sponsor service to create the formatted response
-      return sponsorService.createResponse(formattedResult, true);
+      return sponsorService.createResponse(formattedResult, true, {
+        tool_name: toolName,
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     } catch (error: any) {
       // Log the error
-      logger.error('Error in handler', { error: error.message, code: error.code });
-      
+      logger.error('Error in handler', { error: error.message, code: error.code, toolName });
+
       // Format and return the error using sponsor service
       return sponsorService.createErrorResponse(error, params);
     }
@@ -304,6 +316,7 @@ function createHandlerWrapper<T>(
  * Wrapper for getSpaceTags handler
  */
 export const handleGetSpaceTags = createHandlerWrapper(
+  'get_space_tags',
   getSpaceTags,
   (tags: ClickUpTag[]) => ({
     tags: tags || [],
@@ -314,17 +327,17 @@ export const handleGetSpaceTags = createHandlerWrapper(
 /**
  * Wrapper for createSpaceTag handler
  */
-export const handleCreateSpaceTag = createHandlerWrapper(createSpaceTag);
+export const handleCreateSpaceTag = createHandlerWrapper('create_space_tag', createSpaceTag);
 
 /**
  * Wrapper for updateSpaceTag handler
  */
-export const handleUpdateSpaceTag = createHandlerWrapper(updateSpaceTag);
+export const handleUpdateSpaceTag = createHandlerWrapper('update_space_tag', updateSpaceTag);
 
 /**
  * Wrapper for deleteSpaceTag handler
  */
-export const handleDeleteSpaceTag = createHandlerWrapper(deleteSpaceTag, () => ({
+export const handleDeleteSpaceTag = createHandlerWrapper('delete_space_tag', deleteSpaceTag, () => ({
   success: true,
   message: "Tag deleted successfully"
 }));
@@ -332,7 +345,7 @@ export const handleDeleteSpaceTag = createHandlerWrapper(deleteSpaceTag, () => (
 /**
  * Wrapper for addTagToTask handler
  */
-export const handleAddTagToTask = createHandlerWrapper(addTagToTask, (result) => {
+export const handleAddTagToTask = createHandlerWrapper('add_tag_to_task', addTagToTask, (result) => {
   if (!result.success) {
     return {
       success: false,
@@ -348,7 +361,7 @@ export const handleAddTagToTask = createHandlerWrapper(addTagToTask, (result) =>
 /**
  * Wrapper for removeTagFromTask handler
  */
-export const handleRemoveTagFromTask = createHandlerWrapper(removeTagFromTask, () => ({
+export const handleRemoveTagFromTask = createHandlerWrapper('remove_tag_from_task', removeTagFromTask, () => ({
   success: true,
   message: "Tag removed from task successfully"
 }));

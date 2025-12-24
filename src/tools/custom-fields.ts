@@ -2,6 +2,7 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { CustomFieldDefinitionService } from '../services/clickup/custom-fields.js';
 import { taskService } from '../services/shared.js';
+import { sponsorService } from '../utils/sponsor-service.js';
 
 // Create a singleton instance of the custom field service
 let customFieldService: CustomFieldDefinitionService | null = null;
@@ -160,6 +161,7 @@ export async function handleCustomFieldTool(
   toolName: string,
   args: any
 ): Promise<any> {
+  const startTime = Date.now();
   const service = getCustomFieldService();
 
   switch (toolName) {
@@ -180,7 +182,11 @@ export async function handleCustomFieldTool(
         validated.list_id
       );
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+      const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         fields: result.all,
         count: result.all.length,
         by_location: {
@@ -188,7 +194,12 @@ export async function handleCustomFieldTool(
           folder: result.folder?.length || 0,
           list: result.list?.length || 0
         }
-      };
+      }, true, {
+        tool_name: 'clickup_custom_field_get_definitions',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     }
 
     case 'clickup_custom_field_set_value': {
@@ -208,12 +219,21 @@ export async function handleCustomFieldTool(
         validated.use_custom_task_ids || false
       );
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+      const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         task_id: validated.task_id,
         field_id: validated.field_id,
         value: validated.value,
         message: `Custom field ${validated.field_id} set successfully`
-      };
+      }, true, {
+        tool_name: 'clickup_custom_field_set_value',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     }
 
     case 'clickup_custom_field_remove_value': {
@@ -229,11 +249,20 @@ export async function handleCustomFieldTool(
         validated.use_custom_task_ids || false
       );
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+      const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         task_id: validated.task_id,
         field_id: validated.field_id,
         message: `Custom field ${validated.field_id} removed from task`
-      };
+      }, true, {
+        tool_name: 'clickup_custom_field_remove_value',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     }
 
     case 'clickup_custom_field_get_values': {
@@ -245,11 +274,20 @@ export async function handleCustomFieldTool(
       // Use the task service to get custom field values
       const customFields = await taskService.getCustomFieldValues(validated.task_id);
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = taskService.getRateLimitMetadata();
+      const retryInfo = taskService.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         task_id: validated.task_id,
         custom_fields: customFields,
         field_count: Object.keys(customFields).length
-      };
+      }, true, {
+        tool_name: 'clickup_custom_field_get_values',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     }
 
     case 'clickup_custom_field_find_by_name': {
@@ -263,14 +301,23 @@ export async function handleCustomFieldTool(
         validated.field_name
       );
 
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+      const retryInfo = service.getRetryTelemetry();
+
       if (!field) {
-        return {
+        return sponsorService.createResponse({
           found: false,
           message: `Custom field "${validated.field_name}" not found in list ${validated.list_id}`
-        };
+        }, true, {
+          tool_name: 'clickup_custom_field_find_by_name',
+          execution_time_ms: executionTime,
+          rate_limit: rateLimitInfo,
+          retry: retryInfo
+        });
       }
 
-      return {
+      return sponsorService.createResponse({
         found: true,
         field: {
           id: field.id,
@@ -279,7 +326,12 @@ export async function handleCustomFieldTool(
           required: field.required,
           options: field.options
         }
-      };
+      }, true, {
+        tool_name: 'clickup_custom_field_find_by_name',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     }
 
     case 'clickup_custom_field_set_by_name': {
@@ -310,7 +362,11 @@ export async function handleCustomFieldTool(
         validated.use_custom_task_ids || false
       );
 
-      return {
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+      const retryInfo = service.getRetryTelemetry();
+
+      return sponsorService.createResponse({
         task_id: validated.task_id,
         field: {
           id: field.id,
@@ -319,7 +375,12 @@ export async function handleCustomFieldTool(
         },
         value: validated.value,
         message: `Custom field "${validated.field_name}" set successfully`
-      };
+      }, true, {
+        tool_name: 'clickup_custom_field_set_by_name',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+        retry: retryInfo
+      });
     }
 
     default:

@@ -639,7 +639,7 @@ The integration test suite is **complete and ready for execution**. All delivera
 - **Estimated Time to First Test Run:** 1-2 hours (environment setup + execution)
 
 **Contact:**
-- GitHub Issues: https://github.com/taazkareem/clickup-mcp-server/issues
+- GitHub Issues: https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/issues
 - Test Suite Maintainer: ClickUp MCP Server Team
 
 **References:**

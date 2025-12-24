@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * Configuration handling for ClickUp API credentials and application settings
@@ -20,6 +20,9 @@
  * - ENABLE_SSE: Enable Server-Sent Events transport (default: false)
  * - SSE_PORT: Port for SSE server (default: 3000)
  * - ENABLE_STDIO: Enable STDIO transport (default: true)
+ *
+ * Debug options:
+ * - ENABLE_DEBUG: Enable debug logging with request IDs and timing (default: false)
  */
 
 // Parse any command line environment arguments
@@ -37,6 +40,7 @@ for (let i = 0; i < args.length; i++) {
     if (key === 'ENABLE_SSE') envArgs.enableSSE = value;
     if (key === 'SSE_PORT') envArgs.ssePort = value;
     if (key === 'ENABLE_STDIO') envArgs.enableStdio = value;
+    if (key === 'ENABLE_DEBUG') envArgs.enableDebug = value;
     if (key === 'PORT') envArgs.port = value;
     i++;
   }
@@ -79,6 +83,7 @@ interface Config {
   enableSSE: boolean;
   ssePort: number;
   enableStdio: boolean;
+  enableDebug: boolean;
   port?: string;
   // Security configuration (opt-in for backwards compatibility)
   enableSecurityFeatures: boolean;
@@ -132,6 +137,7 @@ const configuration: Config = {
   enableSSE: parseBoolean(envArgs.enableSSE || process.env.ENABLE_SSE, false),
   ssePort: parseInteger(envArgs.ssePort || process.env.SSE_PORT, 3000),
   enableStdio: parseBoolean(envArgs.enableStdio || process.env.ENABLE_STDIO, true),
+  enableDebug: parseBoolean(envArgs.enableDebug || process.env.ENABLE_DEBUG, false),
   port: envArgs.port || process.env.PORT || '3231',
   // Security configuration (opt-in for backwards compatibility)
   enableSecurityFeatures: parseBoolean(process.env.ENABLE_SECURITY_FEATURES, false),

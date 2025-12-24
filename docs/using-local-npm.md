@@ -76,7 +76,7 @@
   npm publish
 
   # Use your local package
-  npx @taazkareem/clickup-mcp-server@latest
+  npx @YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest
 
   Recommendation: For development, use option #1 (direct path) or #2 (npm link). When your modifications
   are stable and you want to share them, either contribute back to the original repo or publish under your

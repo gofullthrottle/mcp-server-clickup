@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * ClickUp MCP Workspace Tools
@@ -36,15 +36,24 @@ export const workspaceHierarchyTool: Tool = {
  * Handler for the get_workspace_hierarchy tool
  */
 export async function handleGetWorkspaceHierarchy() {
+  const startTime = Date.now();
   try {
     // Get workspace hierarchy from the workspace service
     const hierarchy = await workspaceService.getWorkspaceHierarchy();
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = workspaceService.getRateLimitMetadata();
+    const retryInfo = workspaceService.getRetryTelemetry();
+
     // Generate tree representation
     const treeOutput = formatTreeOutput(hierarchy);
-    
+
     // Use sponsor service to create the response with optional sponsor message
-    return sponsorService.createResponse({ hierarchy: treeOutput }, true);
+    return sponsorService.createResponse({ hierarchy: treeOutput }, true, {
+      tool_name: 'get_workspace_hierarchy',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Error getting workspace hierarchy: ${error.message}`);
   }

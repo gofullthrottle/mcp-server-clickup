@@ -23,7 +23,7 @@ Guide for migrating from local NPX server to Remote MCP Server SaaS platform.
 The original ClickUp MCP Server ran locally via NPX, requiring users to:
 
 1. **Manage API keys manually** - Store sensitive `CLICKUP_API_KEY` in plaintext
-2. **Install and update manually** - Run `npx @taazkareem/clickup-mcp-server@latest` for updates
+2. **Install and update manually** - Run `npx @YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest` for updates
 3. **Limited availability** - Only works when local machine is running
 4. **No premium features** - No monetization path for advanced capabilities
 5. **Security concerns** - API keys stored in env files or config files
@@ -86,7 +86,7 @@ NEW: Remote SaaS Platform
   "mcpServers": {
     "clickup": {
       "command": "npx",
-      "args": ["-y", "@taazkareem/clickup-mcp-server@latest"],
+      "args": ["-y", "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest"],
       "env": {
         "CLICKUP_API_KEY": "pk_1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         "CLICKUP_TEAM_ID": "12345678"
@@ -150,7 +150,7 @@ Remove this section:
   "mcpServers": {
     "clickup": {
       "command": "npx",
-      "args": ["-y", "@taazkareem/clickup-mcp-server@latest"],
+      "args": ["-y", "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest"],
       "env": {
         "CLICKUP_API_KEY": "pk_...",
         "CLICKUP_TEAM_ID": "..."
@@ -245,7 +245,7 @@ Claude should call `clickup_workspace_hierarchy` tool and return your workspace 
 
 | Aspect | Local NPX (Old) | Remote SaaS (New) |
 |--------|----------------|-------------------|
-| **Installation** | `npx @taazkareem/clickup-mcp-server@latest` | No installation needed |
+| **Installation** | `npx @YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest` | No installation needed |
 | **Authentication** | API key in env vars | OAuth 2.0 + JWT token |
 | **Availability** | Only when local machine running | 24/7 on CloudFlare edge |
 | **Updates** | Manual (`npx @latest`) | Automatic (server-side) |
@@ -441,7 +441,7 @@ If you need to temporarily revert to local NPX server:
   "mcpServers": {
     "clickup": {
       "command": "npx",
-      "args": ["-y", "@taazkareem/clickup-mcp-server@latest"],
+      "args": ["-y", "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest"],
       "env": {
         "CLICKUP_API_KEY": "YOUR_API_KEY",
         "CLICKUP_TEAM_ID": "YOUR_TEAM_ID"
@@ -503,12 +503,12 @@ If this works, rollback is complete.
 **Migration Issues:**
 
 1. **Documentation:** Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-2. **Community:** [GitHub Discussions](https://github.com/taazkareem/clickup-mcp-server/discussions)
+2. **Community:** [GitHub Discussions](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/discussions)
 3. **Support:** Email support@yourcompany.com
 
 **Pre-Migration Questions:**
 
-- Ask in [GitHub Discussions](https://github.com/taazkareem/clickup-mcp-server/discussions)
+- Ask in [GitHub Discussions](https://github.com/YOUR_GITHUB_USERNAME/clickup-remote-mcp-server/discussions)
 - Read [DOCUMENTATION_ALIGNMENT_PLAN.md](../DOCUMENTATION_ALIGNMENT_PLAN.md) for complete migration rationale
 
 ---

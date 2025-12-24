@@ -19,7 +19,7 @@ The Server-Sent Events (SSE) transport for the ClickUp MCP Server enables integr
 You can enable the SSE transport using environment variables:
 
 ```bash
-ENABLE_SSE=true SSE_PORT=3000 npx @taazkareem/clickup-mcp-server
+ENABLE_SSE=true SSE_PORT=3000 npx @YOUR_GITHUB_USERNAME/clickup-remote-mcp-server
 ```
 
 ### Command Line Arguments
@@ -27,7 +27,7 @@ ENABLE_SSE=true SSE_PORT=3000 npx @taazkareem/clickup-mcp-server
 Alternatively, you can use command line arguments:
 
 ```bash
-npx @taazkareem/clickup-mcp-server --env ENABLE_SSE=true --env SSE_PORT=3000
+npx @YOUR_GITHUB_USERNAME/clickup-remote-mcp-server --env ENABLE_SSE=true --env SSE_PORT=3000
 ```
 
 ### MCP Configuration File
@@ -41,7 +41,7 @@ If you're using the server through an MCP configuration file (e.g., in Claude De
       "command": "npx",
       "args": [
         "-y",
-        "@taazkareem/clickup-mcp-server@latest"
+        "@YOUR_GITHUB_USERNAME/clickup-remote-mcp-server@latest"
       ],
       "env": {
         "CLICKUP_API_KEY": "your-api-key",

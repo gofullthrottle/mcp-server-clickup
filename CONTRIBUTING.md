@@ -54,7 +54,7 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 ## Questions or Need Help?
 
 - Open a GitHub Discussion
-- Email the maintainer: taazkareem@icloud.com
+- Create an issue on GitHub
 
 ## License
 

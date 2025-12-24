@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * SPDX-FileCopyrightText: © 2025 Talib Kareem <taazkareem@icloud.com>
+ * SPDX-FileCopyrightText: © 2025 John Freier
  * SPDX-License-Identifier: MIT
  *
  * ClickUp MCP Server

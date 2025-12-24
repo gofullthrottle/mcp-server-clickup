@@ -287,6 +287,7 @@ async function findParentIdByName(name: string, type: 'space' | 'folder' | 'list
  * Handler for the create_document tool
  */
 export async function handleCreateDocument(parameters: any) {
+  const startTime = Date.now();
   const { name, parent, visibility, create_page } = parameters;
 
   if (!parent || !visibility || !create_page) {
@@ -304,14 +305,22 @@ export async function handleCreateDocument(parameters: any) {
   try {
     // Create the document
     const newDocument = await clickUpServices.document.createDocument(documentData);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = clickUpServices.document.getRateLimitMetadata();
+    const retryInfo = clickUpServices.document.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: newDocument.id,
       name: newDocument.name,
       parent: newDocument.parent,
       url: `https://app.clickup.com/${config.clickupTeamId}/v/d/${newDocument.id}`,
       message: `Document "${name}" created successfully`
-    }, true);
+    }, true, {
+      tool_name: 'create_document',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to create document: ${error.message}`);
   }
@@ -321,6 +330,7 @@ export async function handleCreateDocument(parameters: any) {
  * Handler for the get_document tool
  */
 export async function handleGetDocument(parameters: any) {
+  const startTime = Date.now();
   const { documentId, title, parentId } = parameters;
 
   let targetDocumentId = documentId;
@@ -340,7 +350,10 @@ export async function handleGetDocument(parameters: any) {
   try {
     // Get the document
     const document = await documentService.getDocument(targetDocumentId);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = documentService.getRateLimitMetadata();
+    const retryInfo = documentService.getRetryTelemetry();
+
     return sponsorService.createResponse({
       id: document.id,
       name: document.name,
@@ -351,7 +364,12 @@ export async function handleGetDocument(parameters: any) {
       public: document.public,
       type: document.type,
       url: `https://app.clickup.com/${config.clickupTeamId}/v/d/${document.id}`
-    }, true);
+    }, true, {
+      tool_name: 'get_document',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to retrieve document: ${error.message}`);
   }
@@ -361,7 +379,8 @@ export async function handleGetDocument(parameters: any) {
  * Handler for the list_documents tool
  */
 export async function handleListDocuments(parameters: any) {
-  const { 
+  const startTime = Date.now();
+  const {
     id,
     creator,
     deleted,
@@ -375,7 +394,7 @@ export async function handleListDocuments(parameters: any) {
   try {
     // Prepare options object with all possible parameters
     const options: any = {};
-    
+
     // Add each parameter to options only if it's defined
     if (id !== undefined) options.id = id;
     if (creator !== undefined) options.creator = creator;
@@ -387,13 +406,21 @@ export async function handleListDocuments(parameters: any) {
     if (next_cursor !== undefined) options.next_cursor = next_cursor;
 
     const response = await documentService.listDocuments(options);
-    
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = documentService.getRateLimitMetadata();
+    const retryInfo = documentService.getRetryTelemetry();
+
     // Ensure we have a valid response
     if (!response || !response.docs) {
       return sponsorService.createResponse({
         documents: [],
         message: "No documents found"
-      }, true);
+      }, true, {
+        tool_name: 'list_documents',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     // Map the documents to a simpler format
@@ -414,7 +441,12 @@ export async function handleListDocuments(parameters: any) {
       count: documents.length,
       next_cursor: response.next_cursor,
       message: `Found ${documents.length} document(s)`
-    }, true);
+    }, true, {
+      tool_name: 'list_documents',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to list documents: ${error.message}`);
   }
@@ -424,12 +456,22 @@ export async function handleListDocuments(parameters: any) {
  * Handler for listing document pages
  */
 export async function handleListDocumentPages(params: any) {
+  const startTime = Date.now();
   logger.info('Listing document pages', { params });
-  
+
   try {
     const { documentId, max_page_depth = -1 } = params;
     const pages = await documentService.listDocumentPages(documentId, { max_page_depth });
-    return sponsorService.createResponse(pages);
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = documentService.getRateLimitMetadata();
+    const retryInfo = documentService.getRetryTelemetry();
+
+    return sponsorService.createResponse(pages, true, {
+      tool_name: 'list_document_pages',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error) {
     logger.error('Error listing document pages', error);
     return sponsorService.createErrorResponse(error);
@@ -440,6 +482,7 @@ export async function handleListDocumentPages(params: any) {
  * Handler for getting document pages
  */
 export async function handleGetDocumentPages(params: any) {
+  const startTime = Date.now();
   const { documentId, pageIds, content_format } = params;
 
   if (!documentId) {
@@ -452,14 +495,23 @@ export async function handleGetDocumentPages(params: any) {
 
   try {
     const options: Partial<DocumentPagesOptions> = {};
-    
+
     // Adiciona content_format nas options se fornecido
     if (content_format) {
       options.content_format = content_format;
     }
 
     const pages = await clickUpServices.document.getDocumentPages(documentId, pageIds, options);
-    return sponsorService.createResponse(pages);
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = clickUpServices.document.getRateLimitMetadata();
+    const retryInfo = clickUpServices.document.getRetryTelemetry();
+
+    return sponsorService.createResponse(pages, true, {
+      tool_name: 'get_document_pages',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(`Failed to get document pages: ${error.message}`);
   }
@@ -469,6 +521,7 @@ export async function handleGetDocumentPages(params: any) {
  * Handler for creating a new page in a document
  */
 export async function handleCreateDocumentPage(parameters: any) {
+  const startTime = Date.now();
   const { documentId, content, sub_title, name, parent_page_id } = parameters;
 
   if (!documentId) {
@@ -486,8 +539,16 @@ export async function handleCreateDocumentPage(parameters: any) {
       name,
       parent_page_id,
     });
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = clickUpServices.document.getRateLimitMetadata();
+    const retryInfo = clickUpServices.document.getRetryTelemetry();
 
-    return sponsorService.createResponse(page);
+    return sponsorService.createResponse(page, true, {
+      tool_name: 'create_document_page',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error) {
     return sponsorService.createErrorResponse(
       `Failed to create document page: ${error.message}`
@@ -499,6 +560,7 @@ export async function handleCreateDocumentPage(parameters: any) {
  * Handler for updating a document page
  */
 export async function handleUpdateDocumentPage(parameters: any) {
+  const startTime = Date.now();
   const { documentId, pageId, name, sub_title, content, content_format, content_edit_mode } = parameters;
 
   if (!documentId) {
@@ -519,10 +581,18 @@ export async function handleUpdateDocumentPage(parameters: any) {
 
   try {
     const page = await clickUpServices.document.updatePage(documentId, pageId, updateData);
+    const executionTime = Date.now() - startTime;
+    const rateLimitInfo = clickUpServices.document.getRateLimitMetadata();
+    const retryInfo = clickUpServices.document.getRetryTelemetry();
 
     return sponsorService.createResponse({
       message: `Page updated successfully`
-    }, true);
+    }, true, {
+      tool_name: 'update_document_page',
+      execution_time_ms: executionTime,
+      rate_limit: rateLimitInfo,
+      retry: retryInfo
+    });
   } catch (error: any) {
     return sponsorService.createErrorResponse(
       `Failed to update document page: ${error.message}`

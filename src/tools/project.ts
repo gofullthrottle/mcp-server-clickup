@@ -68,34 +68,34 @@ export const projectTools: Tool[] = [
     }
   },
   {
-    name: 'clickup_task_create_with_duration',
-    description: 'Create a task with start date and automatically calculated due date based on duration. Tasks with both dates automatically appear on ClickUp Gantt timeline view.',
+    name: 'clickup_project_create_gantt',
+    description: 'Create a Gantt project task with timeline support for project management.',
     inputSchema: {
       type: 'object',
       properties: {
         list_id: {
           type: 'string',
-          description: 'List ID where the task will be created'
+          description: 'List ID where the Gantt project will be created'
         },
         name: {
           type: 'string',
-          description: 'Task name'
+          description: 'Project name'
         },
         description: {
           type: 'string',
-          description: 'Task description'
+          description: 'Project description'
         },
         start_date: {
           type: 'string',
-          description: 'Task start date (ISO format)'
+          description: 'Project start date (ISO format)'
         },
         duration_days: {
           type: 'number',
-          description: 'Duration in days (due date calculated automatically from start_date + duration)'
+          description: 'Project duration in days'
         },
         estimated_hours: {
           type: 'number',
-          description: 'Total estimated hours for the task'
+          description: 'Total estimated hours for the project'
         },
         priority: {
           type: 'number',
@@ -161,6 +161,7 @@ export async function handleProjectTool(
   toolName: string,
   args: any
 ): Promise<any> {
+  const startTime = Date.now();
   const service = getProjectService();
 
   switch (toolName) {
@@ -195,6 +196,10 @@ export async function handleProjectTool(
 
       const result = await service.initializeProject(config);
 
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
       return sponsorService.createResponse({
         space_id: result.spaceId,
         folders: result.folders,
@@ -202,10 +207,15 @@ export async function handleProjectTool(
         message: result.message,
         template_used: config.template,
         total_lists_created: result.folders.reduce((sum, f) => sum + f.lists.length, 0)
-      }, true);
+      }, true, {
+        tool_name: 'clickup_project_initialize',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
-    case 'clickup_task_create_with_duration': {
+    case 'clickup_project_create_gantt': {
       const validated = z.object({
         list_id: z.string(),
         name: z.string(),
@@ -219,12 +229,16 @@ export async function handleProjectTool(
       const result = await service.createGanttProject({
         listId: validated.list_id,
         name: validated.name,
-        description: validated.description || `Task: ${validated.name}`,
+        description: validated.description || `Main project task for ${validated.name}`,
         startDate: new Date(validated.start_date),
         durationDays: validated.duration_days,
         estimatedHours: validated.estimated_hours,
         priority: validated.priority
       });
+
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
 
       return sponsorService.createResponse({
         task_id: result.id,
@@ -233,8 +247,13 @@ export async function handleProjectTool(
         due_date: result.dueDate,
         duration_days: result.duration,
         url: result.url,
-        message: `Task "${result.name}" created with duration successfully`
-      }, true);
+        message: `Gantt project "${result.name}" created successfully`
+      }, true, {
+        tool_name: 'clickup_project_create_gantt',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_apply_template': {
@@ -245,12 +264,21 @@ export async function handleProjectTool(
 
       const result = await service.applyTemplate(validated.space_id, validated.template);
 
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
       return sponsorService.createResponse({
         folders: result.folders,
         message: result.message,
         total_folders: result.folders.length,
         total_lists: result.folders.reduce((sum, f) => sum + f.lists.length, 0)
-      }, true);
+      }, true, {
+        tool_name: 'clickup_project_apply_template',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_create_milestones': {
@@ -266,6 +294,10 @@ export async function handleProjectTool(
         validated.project_duration_days
       );
 
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
+
       return sponsorService.createResponse({
         milestones: milestones.map(m => ({
           id: m.id,
@@ -274,11 +306,20 @@ export async function handleProjectTool(
         })),
         count: milestones.length,
         message: `Created ${milestones.length} project milestones`
-      }, true);
+      }, true, {
+        tool_name: 'clickup_project_create_milestones',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     case 'clickup_project_get_templates': {
       const templates = service.getTemplates();
+
+      const executionTime = Date.now() - startTime;
+      const rateLimitInfo = service.getRateLimitMetadata();
+    const retryInfo = service.getRetryTelemetry();
 
       return sponsorService.createResponse({
         templates: templates.map(t => ({
@@ -287,7 +328,12 @@ export async function handleProjectTool(
           structure: PROJECT_TEMPLATES[t.name]
         })),
         count: templates.length
-      }, true);
+      }, true, {
+        tool_name: 'clickup_project_get_templates',
+        execution_time_ms: executionTime,
+        rate_limit: rateLimitInfo,
+      retry: retryInfo
+      });
     }
 
     default:
