@@ -15,8 +15,11 @@ export interface HttpRequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   headers?: Record<string, string>;
   body?: any;
+  data?: any;
+  params?: Record<string, any>;
   timeout?: number;
   signal?: AbortSignal;
+  url?: string;
 }
 
 /**
@@ -65,6 +68,7 @@ export class HttpError extends Error {
  */
 type ResponseInterceptor = (response: HttpResponse) => HttpResponse;
 type ErrorInterceptor = (error: any) => never;
+type RequestInterceptor = (config: HttpRequestConfig) => HttpRequestConfig;
 
 /**
  * HTTP Client - Axios-compatible interface using native fetch()
@@ -75,6 +79,8 @@ export class HttpClient {
   private defaultTimeout: number;
   private responseInterceptors: ResponseInterceptor[] = [];
   private errorInterceptors: ErrorInterceptor[] = [];
+  private requestInterceptors: Map<number, RequestInterceptor> = new Map();
+  private requestInterceptorId = 0;
   private transformResponse?: (data: any) => any;
 
   constructor(config: {
@@ -90,10 +96,22 @@ export class HttpClient {
   }
 
   /**
-   * Add response interceptor (axios-compatible)
+   * Add request/response interceptors (axios-compatible)
    */
   get interceptors() {
     return {
+      request: {
+        use: (onFulfilled: RequestInterceptor): number => {
+          const id = ++this.requestInterceptorId;
+          if (onFulfilled) {
+            this.requestInterceptors.set(id, onFulfilled);
+          }
+          return id;
+        },
+        eject: (id: number): void => {
+          this.requestInterceptors.delete(id);
+        }
+      },
       response: {
         use: (onFulfilled: ResponseInterceptor, onRejected: ErrorInterceptor) => {
           if (onFulfilled) {

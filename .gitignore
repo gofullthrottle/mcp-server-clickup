@@ -63,3 +63,6 @@ ssl/
 .cloudflare-secrets/
 *.secret
 wrangler-secrets.txt
+
+# ClickUp runtime state (project-specific)
+.clickup_state.json

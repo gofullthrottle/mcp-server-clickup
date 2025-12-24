@@ -13,7 +13,8 @@
       "Bash(npm install:*)",
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run build:worker:*)"
     ],
     "deny": []
   }

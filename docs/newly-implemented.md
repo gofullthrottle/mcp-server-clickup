@@ -53,7 +53,7 @@ Excellent! All the new files have been successfully compiled. The TypeScript err
   Project Management Tools (5 tools)
 
   - clickup_project_initialize - Complete project setup with templates
-  - clickup_project_create_gantt - Create Gantt project tasks
+  - clickup_task_create_with_duration - Create task with start date and duration
   - clickup_project_apply_template - Apply templates to existing spaces
   - clickup_project_create_milestones - Auto-generate project milestones
   - clickup_project_get_templates - List available templates

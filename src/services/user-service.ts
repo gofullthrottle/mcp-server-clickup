@@ -1,4 +1,4 @@
-import { Env } from '../worker';
+import { Env } from '../worker.js';
 
 export interface User {
   id: string;
@@ -104,7 +104,8 @@ export class UserService {
     });
 
     for (const key of list.keys) {
-      if (key.metadata?.email === email) {
+      const metadata = key.metadata as { email?: string } | undefined;
+      if (metadata?.email === email) {
         const data = await this.env.USER_MAPPINGS.get(key.name);
         return data ? JSON.parse(data) : null;
       }
@@ -144,7 +145,7 @@ export class UserService {
 
     return {
       users,
-      cursor: list.list_complete ? undefined : list.cursor
+      cursor: list.list_complete ? undefined : (list as any).cursor
     };
   }
 

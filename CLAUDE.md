@@ -239,6 +239,7 @@ JWT_SECRET=xxx             # JWT signing secret
 # Feature Flags
 ENABLE_AUDIT_LOGGING=true
 ENABLE_RATE_LIMITING=true
+ENABLE_ANALYTICS=true         # Tool usage analytics (default: true)
 MAX_REQUESTS_PER_MINUTE=100
 FREE_TIER_TOOLS=get_workspace_hierarchy,create_task,get_task,update_task
 PREMIUM_TIER_TOOLS=create_bulk_tasks,time_tracking,custom_fields
@@ -259,7 +260,51 @@ CLICKUP_TEAM_ID=xxx
 DOCUMENT_SUPPORT=true      # Enable document tools
 LOG_LEVEL=debug            # Enable debug logging
 ENABLED_TOOLS=task,list    # Whitelist specific tool categories
+ENABLE_ANALYTICS=true      # Tool usage analytics (default: true)
 ```
+
+## Analytics and Monitoring
+
+### Tool Usage Analytics (Phase 1)
+The server includes built-in analytics for tracking tool usage patterns:
+
+**Features**:
+- **Session Tracking**: Detects tool sequences and common workflows
+- **Performance Metrics**: Tracks execution times and success rates
+- **Tool Statistics**: Analyzes which tools are used most frequently
+- **Sequence Patterns**: Identifies common tool usage patterns
+
+**MCP Resources**:
+Access analytics data through MCP resources:
+```typescript
+// Get all tool statistics
+const stats = await mcpClient.readResource("analytics://tool-usage");
+// Returns: Array of ToolStatistics with usage counts, success rates, avg execution times
+
+// Get common tool sequences
+const sequences = await mcpClient.readResource("analytics://sequences");
+// Returns: Top 20 most frequent tool sequences
+
+// Get analytics summary
+const summary = await mcpClient.readResource("analytics://summary");
+// Returns: { total_calls, unique_tools_used, success_rate, avg_execution_time_ms }
+```
+
+**Configuration**:
+```bash
+# Disable analytics (enabled by default)
+ENABLE_ANALYTICS=false
+```
+
+**Data Storage**:
+- Phase 1: In-memory storage (max 1000 events)
+- Phase 2 (planned): CloudFlare D1 + R2 persistence
+
+**Use Cases**:
+1. Optimize FREE_TIER_TOOLS based on actual usage
+2. Identify unused tools for removal
+3. Discover common workflows for template creation
+4. Monitor tool performance and error rates
 
 ## Common Development Tasks
 

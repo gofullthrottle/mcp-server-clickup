@@ -1,4 +1,4 @@
-import { Env } from '../worker';
+import { Env } from '../worker.js';
 
 export interface AuditAction {
   action: string;
