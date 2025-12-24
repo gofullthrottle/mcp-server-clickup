@@ -56,7 +56,7 @@
 │ │                                                                                                             │ │
 │ │ - clickup_project_initialize - Complete project setup                                                       │ │
 │ │ - clickup_project_apply_template - Apply templates                                                          │ │
-│ │ - clickup_project_create_gantt - Create Gantt project                                                       │ │
+│ │ - clickup_task_create_with_duration - Create task with start date and duration                              │ │
 │ │                                                                                                             │ │
 │ │ 4.2 Advanced Task Tools (src/tools/task/advanced.ts)                                                        │ │
 │ │                                                                                                             │ │
