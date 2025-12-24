@@ -1,4 +1,4 @@
-import { Env } from '../worker';
+import { Env } from '../worker.js';
 
 export class EncryptionService {
   private cryptoKey: CryptoKey | null = null;
