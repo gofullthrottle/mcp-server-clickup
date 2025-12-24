@@ -239,6 +239,15 @@ export class TimeTrackingService extends BaseClickUpService {
    * @returns The created time entry
    */
   async addTimeEntry(data: AddTimeEntryData): Promise<ServiceResponse<ClickUpTimeEntry>> {
+    return this.createTimeEntry(data);
+  }
+
+  /**
+   * Create a manual time entry (alias for addTimeEntry)
+   * @param data Time entry data including task ID, start time, and duration
+   * @returns The created time entry
+   */
+  async createTimeEntry(data: AddTimeEntryData): Promise<ServiceResponse<ClickUpTimeEntry>> {
     try {
       this.logOperation('addTimeEntry', { taskId: data.tid, duration: data.duration });
       
