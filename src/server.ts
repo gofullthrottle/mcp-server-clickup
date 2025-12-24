@@ -11,9 +11,11 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
   ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { createClickUpServices } from "./services/clickup/index.js";
 import config from "./config.js";
+import { getAnalyticsService } from "./services/analytics-service.js";
 import { workspaceHierarchyTool, handleGetWorkspaceHierarchy } from "./tools/workspace.js";
 import {
   createTaskTool,
@@ -225,7 +227,71 @@ export function configureServer() {
   // Add handler for resources/list
   server.setRequestHandler(ListResourcesRequestSchema, async (req) => {
     logger.debug("Received ListResources request");
-    return { resources: [] };
+    return {
+      resources: [
+        {
+          uri: "analytics://tool-usage",
+          name: "Tool Usage Statistics",
+          description: "Analytics dashboard for tool usage patterns and performance metrics",
+          mimeType: "application/json"
+        },
+        {
+          uri: "analytics://sequences",
+          name: "Common Tool Sequences",
+          description: "Most frequently used tool sequence patterns",
+          mimeType: "application/json"
+        },
+        {
+          uri: "analytics://summary",
+          name: "Analytics Summary",
+          description: "High-level summary of tool usage analytics",
+          mimeType: "application/json"
+        }
+      ]
+    };
+  });
+
+  // Add handler for resources/read
+  server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
+    const uri = req.params.uri;
+    logger.debug(`Received ReadResource request for: ${uri}`);
+
+    const analytics = getAnalyticsService();
+
+    if (uri === "analytics://tool-usage") {
+      const stats = analytics.getAllToolStatistics();
+      return {
+        contents: [{
+          uri,
+          mimeType: "application/json",
+          text: JSON.stringify(stats, null, 2)
+        }]
+      };
+    }
+
+    if (uri === "analytics://sequences") {
+      const sequences = analytics.getMostCommonSequences(20);
+      return {
+        contents: [{
+          uri,
+          mimeType: "application/json",
+          text: JSON.stringify(sequences, null, 2)
+        }]
+      };
+    }
+
+    if (uri === "analytics://summary") {
+      const summary = analytics.getSummary();
+      return {
+        contents: [{
+          uri,
+          mimeType: "application/json",
+          text: JSON.stringify(summary, null, 2)
+        }]
+      };
+    }
+
+    throw new Error(`Unknown resource: ${uri}`);
   });
 
   // Register CallTool handler with proper logging
@@ -234,12 +300,39 @@ export function configureServer() {
     categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "space", "dependencies", "custom-fields", "project", "advanced-task", "document"]
   });
 
+  // Session tracking for analytics
+  const sessionToolCalls = new Map<string, Array<{ tool: string; timestamp: number }>>();
+  const analytics = getAnalyticsService();
+
+  // Helper: Extract tool category from tool name
+  const getToolCategory = (toolName: string): string => {
+    const parts = toolName.split('_');
+    if (parts.length >= 2 && parts[0] === 'clickup') {
+      return parts[1]; // e.g., "task", "list", "project"
+    }
+    return 'other';
+  };
+
+  // Helper: Generate or extract session ID
+  const getSessionId = (): string => {
+    // For Phase 1, use a simple UUID. Phase 2 will extract from JWT or use request context
+    return `session-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+  };
+
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
     const { name, arguments: params } = req.params;
+    const startTime = Date.now();
+
+    // Get or create session ID
+    const sessionId = getSessionId();
+    const sessionHistory = sessionToolCalls.get(sessionId) || [];
+    const previousTool = sessionHistory.length > 0 ? sessionHistory[sessionHistory.length - 1].tool : undefined;
 
     // Improved logging with more context
     logger.info(`Received CallTool request for tool: ${name}`, {
-      params
+      params,
+      sessionId,
+      sequencePosition: sessionHistory.length
     });
 
     // Check if the tool is enabled
@@ -255,14 +348,15 @@ export function configureServer() {
     }
 
     try {
-      // Handle tool calls by routing to the appropriate handler
-      switch (name) {
-        case "get_workspace_hierarchy":
-          return handleGetWorkspaceHierarchy();
-        case "create_task":
-          return handleCreateTask(params);
-        case "update_task":
-          return handleUpdateTask(params);
+      // Execute tool and capture result for analytics
+      const result = await (async () => {
+        switch (name) {
+          case "get_workspace_hierarchy":
+            return handleGetWorkspaceHierarchy();
+          case "create_task":
+            return handleCreateTask(params);
+          case "update_task":
+            return handleUpdateTask(params);
         case "move_task":
           return handleMoveTask(params);
         case "duplicate_task":
@@ -369,7 +463,7 @@ export function configureServer() {
           return handleCustomFieldTool(name, params);
         // Project tools
         case "clickup_project_initialize":
-        case "clickup_project_create_gantt":
+        case "clickup_task_create_with_duration":
         case "clickup_project_apply_template":
         case "clickup_project_create_milestones":
         case "clickup_project_get_templates":
@@ -382,14 +476,49 @@ export function configureServer() {
         case "clickup_task_generate_gantt_data":
         case "clickup_task_identify_parallel_groups":
           return handleAdvancedTaskTool(name, params);
-        default:
-          logger.error(`Unknown tool requested: ${name}`);
-          const error = new Error(`Unknown tool: ${name}`);
-          error.name = "UnknownToolError";
-          throw error;
-      }
+          default:
+            logger.error(`Unknown tool requested: ${name}`);
+            const error = new Error(`Unknown tool: ${name}`);
+            error.name = "UnknownToolError";
+            throw error;
+        }
+      })(); // End of immediately-invoked async function
+
+      // Record successful tool execution
+      const executionTime = Date.now() - startTime;
+      await analytics.recordToolUsage({
+        session_id: sessionId,
+        timestamp: Date.now(),
+        tool_name: name,
+        tool_category: getToolCategory(name),
+        execution_time_ms: executionTime,
+        success: true,
+        previous_tool: previousTool,
+        sequence_position: sessionHistory.length
+      });
+
+      // Update session history
+      sessionHistory.push({ tool: name, timestamp: Date.now() });
+      sessionToolCalls.set(sessionId, sessionHistory);
+
+      return result;
     } catch (err) {
       logger.error(`Error executing tool: ${name}`, err);
+
+      // Record failed tool execution
+      const executionTime = Date.now() - startTime;
+      await analytics.recordToolUsage({
+        session_id: sessionId,
+        timestamp: Date.now(),
+        tool_name: name,
+        tool_category: getToolCategory(name),
+        execution_time_ms: executionTime,
+        success: false,
+        error_code: err.code?.toString() || err.name || 'UnknownError',
+        error_message: err.message || 'Unknown error occurred',
+        previous_tool: previousTool,
+        sequence_position: sessionHistory.length
+      });
 
       // Transform error to a more descriptive JSON-RPC error
       if (err.name === "UnknownToolError") {
