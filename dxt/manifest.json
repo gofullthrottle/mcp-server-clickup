@@ -1,0 +1,154 @@
+{
+  "dxt_version": "0.1",
+  "name": "clickup-mcp-server",
+  "display_name": "ClickUp MCP Server",
+  "version": "1.0.0",
+  "description": "AI-powered task management with 72 tools for ClickUp workspaces",
+  "long_description": "A comprehensive Model Context Protocol (MCP) server that enables AI agents to securely interact with ClickUp workspaces. Features 72 tools across 12 categories including:\n\n- **Task Management** (27 tools): Create, update, search, move, duplicate, delete tasks with full CRUD operations\n- **List Management** (12 tools): Organize tasks into lists, manage settings and permissions\n- **Workspace Operations** (8 tools): Manage hierarchy, spaces, and team structure\n- **Time Tracking** (6 tools): Track time, manage entries, generate reports\n- **Custom Fields** (5 tools): Create and manage custom fields\n- **Space Management** (4 tools): Organize work with tags and settings\n- **Goal Tracking** (3 tools): Create and monitor goals\n- **Documents** (7 tools): Create and manage workspace documents\n- **Comments & Attachments**: Add comments and attach files to tasks\n\nKey features:\n- Natural language date parsing (47+ patterns)\n- Bulk operations with concurrent processing\n- Name-based entity resolution\n- Built-in rate limiting\n- Markdown formatting support",
+  "author": {
+    "name": "John Freier",
+    "email": "jefreier@berkeley.edu",
+    "url": "https://github.com/gofullthrottle"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gofullthrottle/clickup-mcp-server"
+  },
+  "homepage": "https://github.com/gofullthrottle/clickup-mcp-server#readme",
+  "license": "MIT",
+  "keywords": [
+    "clickup",
+    "mcp",
+    "task-management",
+    "productivity",
+    "project-management",
+    "ai",
+    "automation",
+    "workflow"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "CLICKUP_API_KEY": "${user_config.api_key}",
+        "CLICKUP_TEAM_ID": "${user_config.team_id}",
+        "DOCUMENT_SUPPORT": "${user_config.document_support}",
+        "LOG_LEVEL": "${user_config.log_level}"
+      }
+    }
+  },
+  "tools": [
+    {"name": "get_workspace_hierarchy", "description": "Get complete workspace structure with spaces, folders, and lists"},
+    {"name": "create_task", "description": "Create a new task with natural language date parsing"},
+    {"name": "get_task", "description": "Get task details by ID or custom task ID"},
+    {"name": "update_task", "description": "Update task properties including status, priority, dates"},
+    {"name": "delete_task", "description": "Delete a task by ID"},
+    {"name": "move_task", "description": "Move task to a different list"},
+    {"name": "duplicate_task", "description": "Create a copy of an existing task"},
+    {"name": "get_task_comments", "description": "Get all comments on a task"},
+    {"name": "create_task_comment", "description": "Add a comment to a task"},
+    {"name": "attach_task_file", "description": "Attach a file to a task"},
+    {"name": "create_bulk_tasks", "description": "Create multiple tasks at once"},
+    {"name": "update_bulk_tasks", "description": "Update multiple tasks at once"},
+    {"name": "move_bulk_tasks", "description": "Move multiple tasks to a different list"},
+    {"name": "delete_bulk_tasks", "description": "Delete multiple tasks at once"},
+    {"name": "get_workspace_tasks", "description": "Search tasks across the workspace"},
+    {"name": "get_task_time_entries", "description": "Get time tracking entries for a task"},
+    {"name": "start_time_tracking", "description": "Start tracking time on a task"},
+    {"name": "stop_time_tracking", "description": "Stop active time tracking"},
+    {"name": "add_time_entry", "description": "Add a manual time entry to a task"},
+    {"name": "delete_time_entry", "description": "Delete a time tracking entry"},
+    {"name": "get_current_time_entry", "description": "Get currently running time entry"},
+    {"name": "create_list", "description": "Create a new list in a space"},
+    {"name": "create_list_in_folder", "description": "Create a new list in a folder"},
+    {"name": "get_list", "description": "Get list details by ID or name"},
+    {"name": "update_list", "description": "Update list properties"},
+    {"name": "delete_list", "description": "Delete a list"},
+    {"name": "create_folder", "description": "Create a new folder in a space"},
+    {"name": "get_folder", "description": "Get folder details by ID or name"},
+    {"name": "update_folder", "description": "Update folder properties"},
+    {"name": "delete_folder", "description": "Delete a folder"},
+    {"name": "get_space_tags", "description": "Get all tags in a space"},
+    {"name": "add_tag_to_task", "description": "Add a tag to a task"},
+    {"name": "remove_tag_from_task", "description": "Remove a tag from a task"},
+    {"name": "get_workspace_members", "description": "Get all workspace members"},
+    {"name": "find_member_by_name", "description": "Find a member by name"},
+    {"name": "resolve_assignees", "description": "Resolve assignee names to IDs"},
+    {"name": "clickup_space_list", "description": "List all spaces in workspace"},
+    {"name": "clickup_space_get", "description": "Get space details"},
+    {"name": "clickup_space_create", "description": "Create a new space"},
+    {"name": "clickup_space_update", "description": "Update space properties"},
+    {"name": "clickup_space_delete", "description": "Delete a space"},
+    {"name": "clickup_space_archive", "description": "Archive a space"},
+    {"name": "clickup_space_toggle_feature", "description": "Toggle space features"},
+    {"name": "clickup_task_add_dependency", "description": "Add a task dependency"},
+    {"name": "clickup_task_remove_dependency", "description": "Remove a task dependency"},
+    {"name": "clickup_task_get_dependencies", "description": "Get task dependencies"},
+    {"name": "clickup_task_add_link", "description": "Add a link between tasks"},
+    {"name": "clickup_task_remove_link", "description": "Remove a task link"},
+    {"name": "clickup_custom_field_get_definitions", "description": "Get custom field definitions"},
+    {"name": "clickup_custom_field_set_value", "description": "Set custom field value"},
+    {"name": "clickup_custom_field_remove_value", "description": "Remove custom field value"},
+    {"name": "clickup_custom_field_get_values", "description": "Get all custom field values"},
+    {"name": "clickup_custom_field_find_by_name", "description": "Find custom field by name"},
+    {"name": "clickup_custom_field_set_by_name", "description": "Set custom field by name"},
+    {"name": "clickup_project_initialize", "description": "Initialize a project structure"},
+    {"name": "clickup_task_create_with_duration", "description": "Create task with duration"},
+    {"name": "clickup_project_apply_template", "description": "Apply project template"},
+    {"name": "clickup_project_create_milestones", "description": "Create project milestones"},
+    {"name": "clickup_project_get_templates", "description": "Get available templates"},
+    {"name": "clickup_task_create_from_plan", "description": "Create tasks from a plan"},
+    {"name": "clickup_task_create_with_scheduling", "description": "Create task with scheduling"},
+    {"name": "clickup_task_bulk_create_with_dependencies", "description": "Bulk create with dependencies"},
+    {"name": "clickup_task_calculate_timeline", "description": "Calculate project timeline"},
+    {"name": "clickup_task_generate_gantt_data", "description": "Generate Gantt chart data"},
+    {"name": "clickup_task_identify_parallel_groups", "description": "Identify parallelizable tasks"},
+    {"name": "create_document", "description": "Create a workspace document"},
+    {"name": "get_document", "description": "Get document details"},
+    {"name": "list_documents", "description": "List all documents"},
+    {"name": "list_document_pages", "description": "List document pages"},
+    {"name": "get_document_pages", "description": "Get document page content"},
+    {"name": "create_document_page", "description": "Create a document page"},
+    {"name": "update_document_page", "description": "Update document page content"}
+  ],
+  "tools_generated": false,
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "ClickUp API Key",
+      "description": "Your ClickUp API token. Get it from ClickUp Settings > Apps > API Token",
+      "sensitive": true,
+      "required": true
+    },
+    "team_id": {
+      "type": "string",
+      "title": "Team ID",
+      "description": "Your ClickUp team/workspace ID. Find it in your ClickUp URL or via get_workspace_hierarchy",
+      "required": true
+    },
+    "document_support": {
+      "type": "string",
+      "title": "Enable Document Tools",
+      "description": "Enable 7 additional document management tools",
+      "default": "true",
+      "required": false
+    },
+    "log_level": {
+      "type": "string",
+      "title": "Log Level",
+      "description": "Logging verbosity: ERROR, WARN, INFO, DEBUG, TRACE",
+      "default": "ERROR",
+      "required": false
+    }
+  }
+}

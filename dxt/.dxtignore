@@ -1,0 +1,54 @@
+# Development files
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+*.ts
+coverage/
+.env*
+docs/
+src/
+tests/
+tsconfig.json
+.DS_Store
+
+# Build artifacts not needed
+*.log
+*.map
+dist/
+.git/
+.github/
+.vscode/
+
+# CloudFlare Workers specific (not needed for local DXT)
+worker.js
+mcp-worker-server.js
+wrangler.toml
+
+# SSE server (not needed for STDIO transport)
+sse_server.js
+
+# Package files (npm dependencies bundled)
+package-lock.json
+
+# Other
+*.md
+LICENSE
+Dockerfile
+smithery.yaml
+
+# Large test directories in dependencies
+node_modules/**/test/
+node_modules/**/tests/
+node_modules/**/spec/
+node_modules/**/*-test*/
+node_modules/**/dist-test*/
+node_modules/**/benchmark/
+node_modules/**/example/
+node_modules/**/examples/
+
+# Git files in node_modules
+node_modules/**/.git*
+node_modules/**/.eslint*
+node_modules/**/.prettier*
+node_modules/**/.npm*
