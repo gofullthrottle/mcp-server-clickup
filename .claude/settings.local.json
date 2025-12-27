@@ -14,7 +14,12 @@
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(test:*)",
       "Bash(cat:*)",
-      "Bash(npm run build:worker:*)"
+      "Bash(npm run build:worker:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(mkdir:*)",
+      "Bash(dxt validate:*)",
+      "Bash(dxt info:*)",
+      "Bash(dxt sign:*)"
     ],
     "deny": []
   }
