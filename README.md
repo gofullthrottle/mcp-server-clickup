@@ -5,6 +5,14 @@
 
 # ClickUp MCP Server - Remote SaaS
 
+![Build Status](https://github.com/gofullthrottle/mcp-server-clickup/actions/workflows/publish.yml/badge.svg)
+![Coverage](https://codecov.io/gh/gofullthrottle/mcp-server-clickup/branch/main/graph/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Dependencies](https://img.shields.io/librariesio/github/gofullthrottle/mcp-server-clickup)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+
 **Securely connect your ClickUp workspace to AI assistants without managing API keys.**
 
 A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to interact with ClickUp workspaces through OAuth 2.0 authentication. Transform your task management workflow with **72 tools across 12 categories**.
@@ -22,17 +30,17 @@ A Remote MCP Server hosted on CloudFlare Workers that enables AI agents to inter
 
 ## 🆚 Free vs Premium
 
-| Feature | Free Tier | Premium Tier ($4.99/mo) |
-|---------|-----------|-------------------------|
-| **Basic Operations** | ✅ Create, read, update tasks | ✅ All free features |
-| **Workspace Navigation** | ✅ Hierarchy, lists, folders | ✅ Enhanced navigation |
-| **Rate Limits** | 100 requests/minute | ⚡ 500 requests/minute |
-| **Bulk Operations** | ❌ | ✅ Create/update/move multiple tasks |
-| **Time Tracking** | ❌ | ✅ Start/stop timers, time entries |
-| **Custom Fields** | ❌ | ✅ Full custom field management |
-| **Project Management** | ❌ | ✅ Gantt charts, milestones |
-| **Advanced Tools** | ❌ | ✅ 40+ premium tools |
-| **Support** | Community | 📞 Priority support |
+| Feature                  | Free Tier                     | Premium Tier ($4.99/mo)              |
+| ------------------------ | ----------------------------- | ------------------------------------ |
+| **Basic Operations**     | ✅ Create, read, update tasks | ✅ All free features                 |
+| **Workspace Navigation** | ✅ Hierarchy, lists, folders  | ✅ Enhanced navigation               |
+| **Rate Limits**          | 100 requests/minute           | ⚡ 500 requests/minute               |
+| **Bulk Operations**      | ❌                            | ✅ Create/update/move multiple tasks |
+| **Time Tracking**        | ❌                            | ✅ Start/stop timers, time entries   |
+| **Custom Fields**        | ❌                            | ✅ Full custom field management      |
+| **Project Management**   | ❌                            | ✅ Gantt charts, milestones          |
+| **Advanced Tools**       | ❌                            | ✅ 40+ premium tools                 |
+| **Support**              | Community                     | 📞 Priority support                  |
 
 ## 🚀 Quick Start (5 minutes)
 
@@ -45,6 +53,7 @@ https://clickup-mcp.workers.dev/auth/login
 ```
 
 **What happens:**
+
 1. You'll be redirected to ClickUp's authorization page
 2. Log in and authorize access to your workspace
 3. ClickUp redirects back with an authorization code
@@ -59,11 +68,13 @@ https://clickup-mcp.workers.dev/auth/login
 After authorization, you'll receive a JWT token. Save it securely - you'll need it to configure your AI client.
 
 **Example JWT token:**
+
 ```
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzNDU2Iiwi...
 ```
 
 **Token Details:**
+
 - 24-hour lifetime (auto-expires for security)
 - Use `/auth/refresh` endpoint to renew before expiry
 - Stored JWT contains: user ID, workspace ID, tier level
@@ -92,6 +103,7 @@ Add this to your MCP settings:
 #### Other MCP Clients
 
 Most MCP-compatible clients support remote servers. Use:
+
 - **URL**: `https://clickup-mcp.workers.dev/mcp`
 - **Authentication**: Bearer token in headers
 - **Transport**: HTTP Streamable (recommended)
@@ -100,27 +112,27 @@ Most MCP-compatible clients support remote servers. Use:
 
 ### Core Tools (Free Tier)
 
-| Category | Tools | Description |
-|----------|-------|-------------|
-| **Workspace** | 3 tools | Navigate hierarchy, get members, view structure |
-| **Basic Tasks** | 8 tools | Create, read, update, delete, move, duplicate |
-| **Lists & Folders** | 6 tools | Manage organizational structure |
-| **Comments** | 2 tools | Add and view task comments |
+| Category            | Tools   | Description                                     |
+| ------------------- | ------- | ----------------------------------------------- |
+| **Workspace**       | 3 tools | Navigate hierarchy, get members, view structure |
+| **Basic Tasks**     | 8 tools | Create, read, update, delete, move, duplicate   |
+| **Lists & Folders** | 6 tools | Manage organizational structure                 |
+| **Comments**        | 2 tools | Add and view task comments                      |
 
 ### Premium Tools
 
-| Category | Tools | Description |
-|----------|-------|-------------|
-| **Bulk Operations** | 6 tools | Create/update/move/delete multiple items |
-| **Time Tracking** | 5 tools | Start/stop timers, manage time entries |
-| **Custom Fields** | 6 tools | Full custom field management |
-| **Project Management** | 5 tools | Gantt charts, milestones, templates |
-| **Advanced Tasks** | 6 tools | Scheduling, dependencies, parallel groups |
-| **Documents** | 7 tools | Create and manage ClickUp documents |
-| **Space Management** | 7 tools | Advanced space operations |
-| **Tags** | 3 tools | Tag management and organization |
-| **Dependencies** | 5 tools | Task relationships and links |
-| **Attachments** | 3 tools | File management |
+| Category               | Tools   | Description                               |
+| ---------------------- | ------- | ----------------------------------------- |
+| **Bulk Operations**    | 6 tools | Create/update/move/delete multiple items  |
+| **Time Tracking**      | 5 tools | Start/stop timers, manage time entries    |
+| **Custom Fields**      | 6 tools | Full custom field management              |
+| **Project Management** | 5 tools | Gantt charts, milestones, templates       |
+| **Advanced Tasks**     | 6 tools | Scheduling, dependencies, parallel groups |
+| **Documents**          | 7 tools | Create and manage ClickUp documents       |
+| **Space Management**   | 7 tools | Advanced space operations                 |
+| **Tags**               | 3 tools | Tag management and organization           |
+| **Dependencies**       | 5 tools | Task relationships and links              |
+| **Attachments**        | 3 tools | File management                           |
 
 ### Tool Categories Breakdown
 
@@ -243,6 +255,7 @@ graph TB
 ```
 
 **Architecture Highlights:**
+
 - **OAuth 2.0**: Secure authorization without exposing API keys
 - **JWT Sessions**: Stateless authentication with 24-hour tokens
 - **AES-256-GCM Encryption**: All API keys encrypted at rest in CloudFlare KV
@@ -255,6 +268,7 @@ graph TB
 Once configured, use natural language with your AI assistant:
 
 ### Basic Task Management
+
 ```
 "Create a task called 'Review Q1 Reports' due next Monday in my Marketing list"
 
@@ -264,6 +278,7 @@ Once configured, use natural language with your AI assistant:
 ```
 
 ### Time Tracking (Premium)
+
 ```
 "Start tracking time on the 'Client Meeting Prep' task"
 
@@ -273,6 +288,7 @@ Once configured, use natural language with your AI assistant:
 ```
 
 ### Bulk Operations (Premium)
+
 ```
 "Create 5 tasks for the sprint planning:
 1. Setup environment
@@ -285,6 +301,7 @@ Once configured, use natural language with your AI assistant:
 ```
 
 ### Project Management (Premium)
+
 ```
 "Create a project plan with dependencies for our website launch"
 
@@ -315,6 +332,7 @@ npm run build && npm start
 ### Self-Hosting on CloudFlare Workers
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete self-hosting instructions including:
+
 - CloudFlare Workers setup
 - OAuth app configuration
 - KV namespace creation
@@ -404,15 +422,19 @@ GET  /metrics          - Usage statistics
 ### Common Issues
 
 **"Authentication Required"**
+
 - Your session expired. Visit `/auth/login` to get a new token
 
 **"API Key Not Found"**
+
 - Store your API key using the `/auth/api-key` endpoint
 
 **"Rate Limit Exceeded"**
+
 - Wait 1 minute or upgrade to Premium for higher limits
 
 **"Tool Not Available"**
+
 - This tool requires Premium access
 
 ### Getting Help
@@ -426,6 +448,7 @@ GET  /metrics          - Usage statistics
 ## 📈 Roadmap
 
 ### Current (v1.0)
+
 - ✅ OAuth 2.0 authentication with ClickUp
 - ✅ 72 tools across 12 categories
 - ✅ Free and Premium tiers
@@ -433,6 +456,7 @@ GET  /metrics          - Usage statistics
 - ✅ Global CloudFlare deployment
 
 ### Coming Soon
+
 - 🚧 Multi-workspace support
 - 🚧 Team collaboration features
 - 🚧 Webhook integrations
@@ -447,6 +471,7 @@ GET  /metrics          - Usage statistics
 - **Enterprise**: Custom pricing - Team features, SSO, dedicated support
 
 All plans include:
+
 - ✅ Secure OAuth 2.0 authentication
 - ✅ Encrypted data storage
 - ✅ Global CloudFlare infrastructure
@@ -470,6 +495,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Privacy Policy
 
 We are committed to protecting your privacy. See our privacy practices:
+
 - Data encrypted at rest and in transit
 - No selling of personal information
 - Minimal data collection (only what's needed for functionality)
@@ -479,6 +505,7 @@ We are committed to protecting your privacy. See our privacy practices:
 ### Terms of Service
 
 By using this service, you agree to:
+
 - Use the service in compliance with ClickUp's Terms of Service
 - Not abuse rate limits or attempt to circumvent security measures
 - Not use the service for illegal or harmful activities
@@ -487,6 +514,7 @@ By using this service, you agree to:
 ## 🙏 Acknowledgments
 
 Special thanks to:
+
 - [ClickUp](https://clickup.com) for their excellent API
 - [CloudFlare](https://cloudflare.com) for their Workers platform
 - [Model Context Protocol](https://modelcontextprotocol.io) community
